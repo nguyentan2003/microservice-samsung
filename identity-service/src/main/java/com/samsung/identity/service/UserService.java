@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.samsung.event.dto.NotificationEvent;
+import com.samsung.identity.dto.request.ProfileCreationRequest;
+import com.samsung.identity.repository.httpclient.ProfileClient;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +41,7 @@ public class UserService {
     UserMapper userMapper;
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
+    ProfileClient profileClient;
 
     KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -56,6 +59,11 @@ public class UserService {
         } catch (DataIntegrityViolationException exception){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
+
+        ProfileCreationRequest profileCreationRequest = profileMapper.toProfileCreationRequest(request);
+        profileCreationRequest.setUserId(user.getId());
+        var profile =  profileClient.createProfile(profileCreationRequest);
+        log.info(profile.toString());
 
         UserResponse userResponse = userMapper.toUserResponse(user);
 

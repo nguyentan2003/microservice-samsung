@@ -19,23 +19,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class UserProfileController {
+public class InternalUserProfileController {
 
     @Autowired
     UserProfileService userProfileService;
 
-
-    @GetMapping("/user-profile/get-list")
-    ApiResponse<List<UserProfileResponse>> getListProfile() {
-        return ApiResponse.<List<UserProfileResponse>>builder()
-                .result(userProfileService.getListProfile())
-                .build();
-    }
-
-    @GetMapping("/user-profile/get-by-user-id/{userId}")
-    ApiResponse<UserProfileResponse> getProfile(@PathVariable String userId) {
+    @PostMapping("/internal/create")
+    ApiResponse<UserProfileResponse> createUserProfile(@RequestBody @Valid ProfileCreationRequest request) {
         return ApiResponse.<UserProfileResponse>builder()
-                .result(userProfileService.getProfileByUserId(userId))
+                .result(userProfileService.createProfile(request))
                 .build();
     }
 

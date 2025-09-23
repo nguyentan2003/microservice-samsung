@@ -1,9 +1,8 @@
 package com.samsung.identity.dto.response;
 
-import java.time.LocalDate;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 
 @Data
 @Builder
@@ -13,10 +12,8 @@ import lombok.experimental.FieldDefaults;
 public class UserProfileResponse {
     String id;
     String userId;
-    String username;
+    String fullName;
     String email;
-    String firstName;
-    String lastName;
-    LocalDate dob;
-    String city;
+    String phone;
+    String address;
 }

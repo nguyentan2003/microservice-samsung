@@ -3,6 +3,8 @@ package com.samsung.profile_service.service;
 import com.samsung.profile_service.dto.request.ProfileCreationRequest;
 import com.samsung.profile_service.dto.response.UserProfileResponse;
 import com.samsung.profile_service.entity.UserProfile;
+import com.samsung.profile_service.exception.AppException;
+import com.samsung.profile_service.exception.ErrorCode;
 import com.samsung.profile_service.mapper.UserProfileMapper;
 import com.samsung.profile_service.repository.UserProfileRepository;
 import lombok.AccessLevel;
@@ -39,6 +41,15 @@ public class UserProfileService {
 
         // Map sang DTO
         return userProfileMapper.toListUserProfileResponse(entities);
+    }
+
+    public UserProfileResponse getProfileByUserId(String userId) {
+
+        UserProfile userProfile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userProfileMapper.toUserProfileResponse(userProfile);
+
     }
 
 

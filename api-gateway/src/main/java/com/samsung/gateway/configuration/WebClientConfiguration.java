@@ -17,7 +17,7 @@ public class WebClientConfiguration {
     @Bean
     WebClient webClient(){
         return WebClient.builder()
-                .baseUrl("http://localhost:8080/identity")
+                .baseUrl("http://localhost:8000/identity")
                 .build();
     }
 
@@ -34,6 +34,7 @@ public class WebClientConfiguration {
         return new CorsWebFilter(urlBasedCorsConfigurationSource);
     }
 
+//    register bean cho proxy để sử dụng connect spring 6
     @Bean
     IdentityClient identityClient(WebClient webClient){
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory

@@ -4,7 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.samsung.event.dto.NotificationEvent;
+import com.samsung.identity.dto.request.ApiResponse;
 import com.samsung.identity.dto.request.ProfileCreationRequest;
+import com.samsung.identity.dto.response.UserProfileResponse;
+import com.samsung.identity.mapper.RoleMapper;
 import com.samsung.identity.repository.httpclient.ProfileClient;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,6 +45,7 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
+    RoleMapper roleMapper;
 
     KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -50,24 +54,46 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
 
+
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
-
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException exception){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        ProfileCreationRequest profileCreationRequest = profileMapper.toProfileCreationRequest(request);
-        profileCreationRequest.setUserId(user.getId());
-        var profile =  profileClient.createProfile(profileCreationRequest);
-        log.info(profile.toString());
+        try {
+            ProfileCreationRequest profileCreationRequest = profileMapper.toProfileCreationRequest(request);
+            profileCreationRequest.setUserId(user.getId());
 
-        UserResponse userResponse = userMapper.toUserResponse(user);
+            ApiResponse<UserProfileResponse> profile =  profileClient.createProfile(profileCreationRequest);
 
-        return userResponse;
+            if(profile.getCode() != 1000){
+                throw new AppException(ErrorCode.CREATE_PROFILE_ERROR);
+
+            }
+            UserResponse userResponse = UserResponse.builder()
+                    .email(request.getEmail())
+                    .id(user.getId())
+                    .phone(request.getPhone())
+                    .address(request.getAddress())
+                    .fullName(request.getFullName())
+                    .username(request.getUsername())
+                    .roles(roleMapper.toSetRoleResponse(user.getRoles()))
+                    .build();
+
+            return userResponse;
+
+        } catch (Exception e) {
+            // Rollback thủ công
+            userRepository.delete(user);
+            throw new AppException(ErrorCode.CREATE_PROFILE_ERROR);
+        }
+
+
+
     }
 
     public UserResponse getMyInfo() {
@@ -100,12 +126,23 @@ public class UserService {
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
+
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+   // @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUser(String id) {
-        return userMapper.toUserResponse(
+        UserResponse userResponse = userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+
+        ApiResponse<UserProfileResponse> apiProfile =  profileClient.getProfileByUserId(userResponse.getId());
+        UserProfileResponse profile = apiProfile.getResult();
+
+        userResponse.setEmail(profile.getEmail());
+        userResponse.setAddress(profile.getAddress());
+        userResponse.setPhone(profile.getPhone());
+        userResponse.setFullName(userResponse.getFullName());
+
+        return userResponse;
     }
 }

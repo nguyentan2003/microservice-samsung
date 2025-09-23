@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileResponse(userProfileRepository.save(userProfile));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserProfileResponse> getListProfile() {
         // Lấy toàn bộ UserProfile từ DB
         List<UserProfile> entities = userProfileRepository.findAll();

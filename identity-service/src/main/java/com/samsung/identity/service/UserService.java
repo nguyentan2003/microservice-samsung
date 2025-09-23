@@ -23,7 +23,6 @@ import com.samsung.identity.mapper.ProfileMapper;
 import com.samsung.identity.mapper.UserMapper;
 import com.samsung.identity.repository.RoleRepository;
 import com.samsung.identity.repository.UserRepository;
-import com.samsung.identity.repository.httpclient.ProfileClient;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +39,7 @@ public class UserService {
     UserMapper userMapper;
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
-    ProfileClient profileClient;
+
     KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
@@ -51,7 +50,6 @@ public class UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
-        user.setEmailVerified(false);
 
         try {
             user = userRepository.save(user);
@@ -59,25 +57,9 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        var profileRequest = profileMapper.toProfileCreationRequest(request);
-        profileRequest.setUserId(user.getId());
+        UserResponse userResponse = userMapper.toUserResponse(user);
 
-        var profile = profileClient.createProfile(profileRequest);
-
-        NotificationEvent notificationEvent = NotificationEvent.builder()
-                .channel("EMAIL")
-                .recipient(request.getEmail())
-                .subject("Welcome to bookteria")
-                .body("Hello, " + request.getUsername())
-                .build();
-
-        // Publish message to kafka
-        kafkaTemplate.send("notification-delivery", notificationEvent);
-
-        var userCreationReponse = userMapper.toUserResponse(user);
-        userCreationReponse.setId(profile.getResult().getId());
-
-        return userCreationReponse;
+        return userResponse;
     }
 
     public UserResponse getMyInfo() {

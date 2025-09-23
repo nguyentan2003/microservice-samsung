@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.samsung.identity.validator.DobConstraint;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,11 +17,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
     String password;
-    String firstName;
-    String lastName;
+    @Email(message = "INVALID_EMAIL")
+    @NotBlank(message = "EMAIL_IS_REQUIRED")
+    String email;
 
-    @DobConstraint(min = 18, message = "INVALID_DOB")
-    LocalDate dob;
+    String fullName;
+    String phone;
+    String address;
 
     List<String> roles;
 }

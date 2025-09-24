@@ -47,8 +47,10 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
     RoleMapper roleMapper;
+//    vì đang cấu hình string string
+   KafkaTemplate<String, String> kafkaTemplate;
 
-    KafkaTemplate<String, Object> kafkaTemplate;
+//    KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
@@ -86,11 +88,13 @@ public class UserService {
                     .roles(roleMapper.toSetRoleResponse(user.getRoles()))
                     .build();
 
+            kafkaTemplate.send("register_user","welcome : "+user.getUsername());
             return userResponse;
 
         } catch (Exception e) {
             // Rollback thủ công
             userRepository.delete(user);
+            kafkaTemplate.send("register_user","Error khi dk profile : "+user.getUsername());
             throw new AppException(ErrorCode.CREATE_PROFILE_ERROR);
         }
 

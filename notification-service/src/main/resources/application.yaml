@@ -1,0 +1,15 @@
+server:
+  port: 8006
+  servlet:
+    context-path: /notifications
+spring:
+  application:
+    name: notification-service
+  data:
+    data:
+      mongodb:
+        host: localhost
+        port: 27017
+        username: root
+        password: root
+        database: topic9_notification_service

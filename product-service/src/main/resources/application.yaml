@@ -1,0 +1,18 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /product
+
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: "jdbc:mysql://localhost:3306/topic9_product_service"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+

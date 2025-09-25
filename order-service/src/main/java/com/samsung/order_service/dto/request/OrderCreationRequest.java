@@ -1,6 +1,6 @@
 package com.samsung.order_service.dto.request;
 
-import jakarta.persistence.Column;
+import com.samsung.event.dto.ItemDetail;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

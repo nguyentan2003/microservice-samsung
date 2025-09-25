@@ -1,4 +1,4 @@
-package com.samsung.order_service.dto.request;
+package com.samsung.event.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

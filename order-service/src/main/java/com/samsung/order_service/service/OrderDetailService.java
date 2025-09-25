@@ -1,10 +1,7 @@
 package com.samsung.order_service.service;
 
-import com.samsung.order_service.dto.request.ItemDetail;
 import com.samsung.order_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.order_service.dto.response.OrderDetailResponse;
-import com.samsung.order_service.dto.response.OrderResponse;
-import com.samsung.order_service.entity.Order;
 import com.samsung.order_service.entity.OrderDetail;
 import com.samsung.order_service.exception.AppException;
 import com.samsung.order_service.exception.ErrorCode;

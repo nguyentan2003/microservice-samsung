@@ -1,12 +1,12 @@
 package com.samsung.order_service.service;
 
-import com.samsung.order_service.dto.request.ItemDetail;
+import com.samsung.event.dto.ItemDetail;
+import com.samsung.event.dto.OrderCreatedEvent;
 import com.samsung.order_service.dto.request.OrderCreationRequest;
 import com.samsung.order_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.order_service.dto.response.OrderDetailResponse;
 import com.samsung.order_service.dto.response.OrderResponse;
 import com.samsung.order_service.entity.Order;
-import com.samsung.order_service.entity.OrderDetail;
 import com.samsung.order_service.exception.AppException;
 import com.samsung.order_service.exception.ErrorCode;
 
@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,8 +37,11 @@ public class OrderService {
     OrderDetailService orderDetailService;
     OrderDetailMapper orderDetailMapper;
 
+    KafkaTemplate<String, Object> kafkaTemplate;
+
     public OrderResponse createOrder(OrderCreationRequest request){
         Order order = orderMapper.toOrder(request);
+        order.setStatus("PENDING");
         orderRepository.save(order);
         OrderResponse orderResponse= orderMapper.toOrderResponse(order);
 
@@ -57,6 +61,16 @@ public class OrderService {
             });
             orderResponse.setListOrderDetailResponse(orderDetailResponses);
 
+            // push event vao kafka
+            OrderCreatedEvent event = OrderCreatedEvent.builder()
+                    .orderId(order.getId())
+                    .userId(order.getUserId())
+                    .listItemDetail(itemDetails)
+                    .totalAmount(order.getTotalAmount())
+                    .build();
+
+            kafkaTemplate.send("order-created3", event);
+
         } catch (Exception e) {
             throw new AppException(ErrorCode.ERROR_CALL_ORDER_DETAIL);
         }
@@ -65,6 +79,20 @@ public class OrderService {
         return orderResponse;
     }
 
+    public void CancelOrder(String orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(()->{
+            throw new RuntimeException();
+        });
+        order.setStatus("CANCEL");
+        orderRepository.save(order);
+    }
+    public void TransPendingPayment(String orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(()->{
+            throw new RuntimeException();
+        });
+        order.setStatus("PENDING_PAYMENT");
+        orderRepository.save(order);
+    }
 
     public List<OrderResponse> getListOrder() {
 

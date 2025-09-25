@@ -3,6 +3,7 @@ package com.samsung.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.samsung.event.dto.DataEvent;
 import com.samsung.event.dto.NotificationEvent;
 import com.samsung.identity.dto.request.ApiResponse;
 import com.samsung.identity.dto.request.ProfileCreationRequest;
@@ -48,7 +49,7 @@ public class UserService {
     ProfileClient profileClient;
     RoleMapper roleMapper;
 //    vì đang cấu hình string string
-   KafkaTemplate<String, String> kafkaTemplate;
+   KafkaTemplate<String, Object> kafkaTemplate;
 
 //    KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -57,6 +58,14 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
 
+        DataEvent dataEvent = DataEvent.builder()
+                .email(request.getEmail())
+                .id(user.getId())
+                .phone(request.getPhone())
+                .address(request.getAddress())
+                .fullName(request.getFullName())
+                .username(request.getUsername())
+                .build();
 
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
@@ -88,13 +97,14 @@ public class UserService {
                     .roles(roleMapper.toSetRoleResponse(user.getRoles()))
                     .build();
 
-            kafkaTemplate.send("register_user","welcome : "+user.getUsername());
+
+            kafkaTemplate.send("register_user4",dataEvent);
             return userResponse;
 
         } catch (Exception e) {
             // Rollback thủ công
             userRepository.delete(user);
-            kafkaTemplate.send("register_user","Error khi dk profile : "+user.getUsername());
+            kafkaTemplate.send("register_user4",dataEvent);
             throw new AppException(ErrorCode.CREATE_PROFILE_ERROR);
         }
 

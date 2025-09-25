@@ -1,7 +1,7 @@
 package com.samsung.notification.controller;
 
 
-
+import com.samsung.event.dto.DataEvent;
 import com.samsung.notification.entity.Notification;
 import com.samsung.notification.service.NotificationService;
 
@@ -19,11 +19,7 @@ import java.time.LocalDateTime;
 public class NotificationController {
     private final NotificationService notificationService;
 
-    // topic va group_id , và message đc map từ giá trị data truyền bên producer;
-    @KafkaListener(topics = "register_user")
-    public void listeningKafka(String message){
-        log.info(message);
-    }
+
     @GetMapping("/stream/{userId}")
     public SseEmitter stream(@PathVariable String userId) {
         return notificationService.subscribe(userId);

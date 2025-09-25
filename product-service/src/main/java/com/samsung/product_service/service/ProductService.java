@@ -1,5 +1,7 @@
 package com.samsung.product_service.service;
 
+import com.samsung.event.dto.ItemDetail;
+import com.samsung.event.dto.OrderCreatedEvent;
 import com.samsung.product_service.dto.request.ProductRequest;
 import com.samsung.product_service.dto.response.ProductResponse;
 import com.samsung.product_service.entity.Product;
@@ -10,7 +12,7 @@ import com.samsung.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +52,7 @@ public class ProductService {
                 .description(request.getDescription())
                 .type(request.getType())
                 .price(request.getPrice())
+                .reservedStock(0L)
                 .stockQuantity(request.getStockQuantity())
                 .imageUrl(fileName)
                 .build();
@@ -67,4 +71,37 @@ public class ProductService {
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         return productMapper.toProductResponse(product);
     }
+
+
+    @Transactional
+    public Boolean checkStock(OrderCreatedEvent orderCreatedEvent) {
+        for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
+            // tìm product theo id
+            Product product = productRepository.findById(item.getProductId())
+                    .orElse(null);
+
+            if (product == null) {
+                return false; // sản phẩm không tồn tại
+            }
+
+            // tính tồn kho khả dụng
+            Long available = product.getStockQuantity() - product.getReservedStock();
+
+            if (available < item.getQuantity()) {
+                return false; // không đủ hàng
+            }
+        }
+
+        // Nếu tất cả sản phẩm đều đủ → tiến hành reserve
+        for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow();
+
+            product.setReservedStock(product.getReservedStock() + item.getQuantity());
+            productRepository.save(product);
+        }
+
+        return true;
+    }
+
 }

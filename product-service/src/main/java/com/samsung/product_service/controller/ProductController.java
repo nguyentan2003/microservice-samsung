@@ -1,11 +1,14 @@
 package com.samsung.product_service.controller;
 
+import com.samsung.event.dto.OrderCreatedEvent;
 import com.samsung.product_service.dto.request.ProductRequest;
 import com.samsung.product_service.dto.response.ApiResponse;
 import com.samsung.product_service.dto.response.ProductResponse;
 import com.samsung.product_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ProductController {
 
     private final ProductService productService;
@@ -56,4 +60,6 @@ public class ProductController {
                 .build();
 
     }
+
+
 }

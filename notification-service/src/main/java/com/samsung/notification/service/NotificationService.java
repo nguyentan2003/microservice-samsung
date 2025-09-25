@@ -4,6 +4,9 @@ package com.samsung.notification.service;
 import com.samsung.notification.configuration.CustomJwtDecoder;
 import com.samsung.notification.entity.Notification;
 import com.samsung.notification.repository.NotificationRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +26,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 @Service
 public class NotificationService {
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
-    private final NotificationRepository repository;
+    NotificationRepository repository;
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public NotificationService(NotificationRepository repository) {

@@ -23,6 +23,10 @@ public class Product {
 
     @Column(name = "stock_quantity")
     Long stockQuantity;
+
+    @Column(name = "reserved_stock")
+    Long reservedStock ;
+
     @Column(name = "image_url")
     String imageUrl;
 

@@ -30,6 +30,8 @@ public class ListeningController {
             // het hang
             orderService.CancelOrder(orderStockStatus.getOrderId());
 
+        }else{
+            orderService.TransPendingPayment(orderStockStatus.getOrderId());
         }
         kafkaTemplate.send("current-status-order", orderStockStatus);
     }

@@ -33,5 +33,13 @@ public class ListeningController {
 
     }
 
+    @KafkaListener(topics = "order-expired")
+    public void StatusPayment(OrderStockStatus orderStockStatus){
+        if(!orderStockStatus.getStatus()){
+            log.info("data: don hang da bi huy do qua thoi gian chua thanh toan");
+        }
+
+    }
+
 }
 

@@ -75,8 +75,10 @@ public class OrderService {
                     .totalAmount(order.getTotalAmount())
                     .build();
 
+            // push message order-create
             kafkaTemplate.send("order-created3", event);
 
+         //  kiem tra xem order da duoc thanh toan chua
             scheduleOrderTimeout(order.getId());
 
         } catch (Exception e) {

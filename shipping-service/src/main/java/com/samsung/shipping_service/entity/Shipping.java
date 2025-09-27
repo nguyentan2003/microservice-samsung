@@ -32,4 +32,7 @@ public class Shipping {
     @Column(name = "delivery_date")
     String deliveryDate;
 
+    @Column(name = "current_position")
+    String currentPosition;
+
 }

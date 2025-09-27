@@ -17,4 +17,5 @@ public class ShippingResponse {
     String status;
     String shippingDate;
     String deliveryDate;
+    String currentPosition;
 }

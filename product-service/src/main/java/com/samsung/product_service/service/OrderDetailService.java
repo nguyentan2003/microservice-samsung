@@ -1,12 +1,12 @@
-package com.samsung.order_service.service;
+package com.samsung.product_service.service;
 
-import com.samsung.order_service.dto.request.OrderDetailCreationRequest;
-import com.samsung.order_service.dto.response.OrderDetailResponse;
-import com.samsung.order_service.entity.OrderDetail;
-import com.samsung.order_service.exception.AppException;
-import com.samsung.order_service.exception.ErrorCode;
-import com.samsung.order_service.mapper.OrderDetailMapper;
-import com.samsung.order_service.repository.OrderDetailRepository;
+import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
+import com.samsung.product_service.dto.response.OrderDetailResponse;
+import com.samsung.product_service.entity.OrderDetail;
+import com.samsung.product_service.exception.AppException;
+import com.samsung.product_service.exception.ErrorCode;
+import com.samsung.product_service.mapper.OrderDetailMapper;
+import com.samsung.product_service.repository.OrderDetailRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

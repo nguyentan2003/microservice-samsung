@@ -13,15 +13,11 @@ public class ListeningController {
 
     private final PaymentService paymentService;
 
-    @KafkaListener(topics = "current-status-order")
-    public void CurrentStatusOrder(OrderStockStatus orderStockStatus){
-        if(orderStockStatus.getStatus()){
-            log.info("data: don hang da duoc giu thanh cong");
-        }else log.info("data: don hang da bi huy");;
+    @KafkaListener(topics = "RefundMoney")
+    public void RefundMoney(String orderId){
+        log.info("hoàn tiền thành công cho order : {}",orderId);;
 
     }
-
-
 
 }
 

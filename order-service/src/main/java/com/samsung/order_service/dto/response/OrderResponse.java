@@ -1,10 +1,7 @@
 package com.samsung.order_service.dto.response;
 
-import com.samsung.order_service.entity.OrderDetail;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 
 @Data
@@ -18,5 +15,6 @@ public class OrderResponse {
     String orderDate;
     String status;
     Long totalAmount;
-    List<OrderDetailResponse> listOrderDetailResponse;
+    String paymentType;
+    String address;
 }

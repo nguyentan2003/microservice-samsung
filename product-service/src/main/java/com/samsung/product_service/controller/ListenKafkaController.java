@@ -1,5 +1,6 @@
 package com.samsung.product_service.controller;
 
+import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.OrderCreatedEvent;
 import com.samsung.event.dto.OrderStockStatus;
 import com.samsung.product_service.service.ProductService;
@@ -17,29 +18,24 @@ import org.springframework.web.bind.annotation.*;
 public class ListenKafkaController {
     private final ProductService productService;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    @KafkaListener(topics = "order-created3")
-    public void listeningOrderCreated(OrderCreatedEvent event){
+    @KafkaListener(topics = "OrderCreated")
+    public void listeningOrderCreated(DataOrderCreated event){
         if(productService.checkStock(event)){
-
-            OrderStockStatus orderStockStatus = OrderStockStatus.builder()
-                    .orderId(event.getOrderId())
-                    .status(true)
-                    .userId(event.getUserId())
-                    .build();
-            kafkaTemplate.send("check-order-stock", orderStockStatus);
-            log.info("giu hang thanh cong");
-
+            kafkaTemplate.send("OrderStockReserved",event.getOrderId(),event.getOrderId());
         }else {
-            OrderStockStatus orderStockStatus = OrderStockStatus.builder()
-                    .orderId(event.getOrderId())
-                    .status(false)
-                    .userId(event.getUserId())
-                    .build();
-            kafkaTemplate.send("check-order-stock", orderStockStatus);
-
+            kafkaTemplate.send("OrderStockFailed",event.getOrderId(),event.getOrderId());
             log.info("het hang mot so san pham");
         }
     }
+    @KafkaListener(topics = "ReturnStock")
+    public void listeningReturnStock(String orderId){
+        if(productService.returnStockByOrderId(orderId)){
+            log.info("return stock {} thanh cong",orderId);
+        }else {
+            log.info("return stock {} fail",orderId);
+        }
+    }
+
 }

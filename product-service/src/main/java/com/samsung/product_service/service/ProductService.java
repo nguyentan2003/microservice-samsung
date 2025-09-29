@@ -1,13 +1,17 @@
 package com.samsung.product_service.service;
 
+import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.ItemDetail;
 import com.samsung.event.dto.OrderCreatedEvent;
+import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.product_service.dto.request.ProductRequest;
 import com.samsung.product_service.dto.response.ProductResponse;
+import com.samsung.product_service.entity.OrderDetail;
 import com.samsung.product_service.entity.Product;
 import com.samsung.product_service.exception.AppException;
 import com.samsung.product_service.exception.ErrorCode;
 import com.samsung.product_service.mapper.ProductMapper;
+import com.samsung.product_service.repository.OrderDetailRepository;
 import com.samsung.product_service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +32,9 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+
+    private final OrderDetailService orderDetailService;
+    private final OrderDetailRepository orderDetailRepository;
 
     private static final String UPLOAD_DIR = "uploads/";
 
@@ -74,7 +81,7 @@ public class ProductService {
 
 
     @Transactional
-    public Boolean checkStock(OrderCreatedEvent orderCreatedEvent) {
+    public Boolean checkStock(DataOrderCreated orderCreatedEvent) {
         for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
             // tìm product theo id
             Product product = productRepository.findById(item.getProductId())
@@ -99,9 +106,54 @@ public class ProductService {
 
             product.setReservedStock(product.getReservedStock() + item.getQuantity());
             productRepository.save(product);
+
+            // tao cac orderDetail
+            OrderDetailCreationRequest orderDetailCreationRequest = OrderDetailCreationRequest.builder()
+                    .orderId(orderCreatedEvent.getOrderId())
+                    .productId(product.getId())
+                    .priceAtTime(item.getPriceAtTime())
+                    .quantity(item.getQuantity())
+                    .build();
+            orderDetailService.createOrderDetail(orderDetailCreationRequest);
         }
 
         return true;
     }
+
+    @Transactional
+    public Boolean returnStockByOrderId(String orderId) {
+        // Lấy danh sách orderDetail theo orderId
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(orderId);
+
+        if (orderDetails.isEmpty()) {
+           // log.warn("Không tìm thấy OrderDetail cho orderId={}", orderId);
+            return false;
+        }
+
+        for (OrderDetail orderDetail : orderDetails) {
+            Product product = productRepository.findById(orderDetail.getProductId())
+                    .orElse(null);
+
+            if (product == null) {
+              //  log.warn("Không tìm thấy Product với id={}", orderDetail.getProductId());
+                return false;
+            }
+
+            // Kiểm tra tránh âm reservedStock
+            if (product.getReservedStock() < orderDetail.getQuantity()) {
+             //   log.warn("reservedStock của product {} nhỏ hơn số cần hoàn! reserved={}, cần hoàn={}",
+                    //    product.getId(), product.getReservedStock(), orderDetail.getQuantity());
+                return false;
+            }
+
+            // Hoàn trả số lượng
+            product.setReservedStock(product.getReservedStock() - orderDetail.getQuantity());
+            productRepository.save(product);
+        }
+
+        return true;
+    }
+
+
 
 }

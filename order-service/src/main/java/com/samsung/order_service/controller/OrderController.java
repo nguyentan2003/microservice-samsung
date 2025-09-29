@@ -23,19 +23,19 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @GetMapping("/list")
-    ApiResponse<List<OrderResponse>> getListOrder() {
-        return ApiResponse.<List<OrderResponse>>builder()
-                .result(orderService.getListOrder())
-                .build();
-    }
+//    @GetMapping("/list")
+//    ApiResponse<List<OrderResponse>> getListOrder() {
+//        return ApiResponse.<List<OrderResponse>>builder()
+//                .result(orderService.getListOrder())
+//                .build();
+//    }
 
-    @GetMapping("/{orderId}")
-    ApiResponse<OrderResponse> getOrderByOrderId(@PathVariable String orderId) {
-        return ApiResponse.<OrderResponse>builder()
-                .result(orderService.getOrderByOrderId(orderId))
-                .build();
-    }
+//    @GetMapping("/{orderId}")
+//    ApiResponse<OrderResponse> getOrderByOrderId(@PathVariable String orderId) {
+//        return ApiResponse.<OrderResponse>builder()
+//                .result(orderService.getOrderByOrderId(orderId))
+//                .build();
+//    }
     @PostMapping("/create")
     ApiResponse<OrderResponse> create(@RequestBody OrderCreationRequest request) {
 

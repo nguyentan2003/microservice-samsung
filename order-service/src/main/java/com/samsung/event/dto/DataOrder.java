@@ -1,22 +1,26 @@
-package com.samsung.order_service.dto.request;
+package com.samsung.event.dto;
 
-import com.samsung.event.dto.ItemDetail;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderCreationRequest {
+public class DataOrder {
+
+    String id;
 
     String userId;
+
     String orderDate;
+
+    String status;
+
     Long totalAmount;
+
     String paymentType;
-    String address;
-    List<ItemDetail> listItemDetail ;
+
 }

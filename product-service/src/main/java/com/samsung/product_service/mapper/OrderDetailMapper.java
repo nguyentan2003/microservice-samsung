@@ -1,10 +1,9 @@
-package com.samsung.order_service.mapper;
+package com.samsung.product_service.mapper;
 
 
-import com.samsung.order_service.dto.request.OrderDetailCreationRequest;
-import com.samsung.order_service.dto.response.OrderDetailResponse;
-
-import com.samsung.order_service.entity.OrderDetail;
+import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
+import com.samsung.product_service.dto.response.OrderDetailResponse;
+import com.samsung.product_service.entity.OrderDetail;
 import org.mapstruct.Mapper;
 
 import java.util.List;

@@ -1,6 +1,10 @@
 package com.samsung.order_service.controller;
 
-import com.samsung.event.dto.OrderStockStatus;
+import com.samsung.event.dto.DataOrder;
+import com.samsung.order_service.entity.Order;
+import com.samsung.order_service.exception.OrderStatus;
+import com.samsung.order_service.exception.PaymentType;
+import com.samsung.order_service.mapper.OrderMapper;
 import com.samsung.order_service.service.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -9,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.*;
-
-
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,19 +23,78 @@ public class ListeningController {
 
     @Autowired
     OrderService orderService;
+    @Autowired
+    OrderMapper orderMapper;
 
-    KafkaTemplate<String, Object> kafkaTemplate;
+    KafkaTemplate<String, String> kafkaTemplate;
+    KafkaTemplate<String, Object> kafkaObject;
 
-    @KafkaListener(topics = "check-order-stock")
-    public void listeningOrderCreated(OrderStockStatus orderStockStatus){
-        if(!orderStockStatus.getStatus()){
-            // het hang
-            orderService.CancelOrder(orderStockStatus.getOrderId());
+    private void updateAndSend(String orderId, String newStatus, String topic) {
+        orderService.updateOrderStatus(orderId, newStatus);
 
-        }else{
-            orderService.TransPendingPayment(orderStockStatus.getOrderId());
+        if (topic != null) {
+            if(topic.equals("OrderSuccess") || topic.equals("OrderCanceled")) {
+                Order order = orderService.getOrderById(orderId);
+                kafkaObject.send(topic, orderId, orderMapper.toDataOrder(order));
+            }
+            else kafkaTemplate.send(topic, orderId, orderId);
         }
-        kafkaTemplate.send("current-status-order", orderStockStatus);
     }
 
+
+    @KafkaListener(topics = "OrderStockReserved")
+    public void listeningStockSuccess(String orderId) {
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) return;
+
+        if (PaymentType.PREPAID.equals(order.getPaymentType())) {
+            switch (order.getStatus()) {
+                case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_RESERVED, null);
+                case OrderStatus.PAYMENT_SUCCESS ->updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
+                case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "ReturnStock");
+            }
+        } else {
+            updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
+        }
+    }
+
+    @KafkaListener(topics = "OrderStockFailed")
+    public void listeningStockFailed(String orderId) {
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) return;
+
+        if (PaymentType.PREPAID.equals(order.getPaymentType())) {
+            switch (order.getStatus()) {
+                case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_FAILED, null);
+                case OrderStatus.PAYMENT_SUCCESS -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
+                case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled");
+            }
+        } else {
+            updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled");
+        }
+    }
+
+    @KafkaListener(topics = "PaymentFailed")
+    public void listeningPaymentFailed(String orderId) {
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) return;
+
+        switch (order.getStatus()) {
+            case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_FAILED, null);
+            case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.CANCELED, "ReturnStock");
+            case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled");
+        }
+    }
+
+    @KafkaListener(topics = "PaymentSuccess")
+    public void listeningPaymentSuccess(String orderId) {
+        Order order = orderService.getOrderById(orderId);
+        if (order == null) return;
+
+        switch (order.getStatus()) {
+            case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_SUCCESS, null);
+            case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
+            case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
+        }
+    }
 }

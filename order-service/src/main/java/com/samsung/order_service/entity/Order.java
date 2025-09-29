@@ -27,8 +27,13 @@ public class Order {
 
     String status;
 
-
     @Column(name = "total_amount")
     Long totalAmount;
+
+//    PREPAID, POSTPAID
+    @Column(name = "payment_type")
+    String paymentType;
+
+    String address;
 
 }

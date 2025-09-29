@@ -33,22 +33,18 @@ public class PaymentService {
 
     PaymentMapper paymentMapper;
     PaymentRepository paymentRepository;
-    KafkaTemplate<String, Object> kafkaTemplate;
+    KafkaTemplate<String, String> kafkaTemplate;
 
     public PaymentResponse createPayment(PaymentRequest paymentRequest){
-        PaymentStatus paymentStatus = PaymentStatus.builder()
-                .orderId(paymentRequest.getOrderId())
-                .build();
+
         if("SUCCESS".equals(paymentRequest.getStatus())){
             Payment payment = paymentMapper.toPayment(paymentRequest);
 
-            paymentStatus.setStatus(true);
-            kafkaTemplate.send("payment-successful", paymentStatus);
+            kafkaTemplate.send("PaymentSuccess",paymentRequest.getOrderId(),paymentRequest.getOrderId());
             return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
         }
         else{
-            paymentStatus.setStatus(false);
-            kafkaTemplate.send("payment-fails", paymentStatus);
+            kafkaTemplate.send("PaymentFailed",paymentRequest.getOrderId(),paymentRequest.getOrderId());
             throw new AppException(ErrorCode.PAYMENT_FAILS);
         }
     }

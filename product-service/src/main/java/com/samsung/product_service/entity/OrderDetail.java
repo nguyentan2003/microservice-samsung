@@ -1,4 +1,4 @@
-package com.samsung.order_service.entity;
+package com.samsung.product_service.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,5 +27,6 @@ public class OrderDetail {
     @Column(name = "price_at_time")
     Long priceAtTime;
 
+    String status;
 
 }

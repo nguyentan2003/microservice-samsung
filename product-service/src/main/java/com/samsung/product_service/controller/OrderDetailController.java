@@ -1,12 +1,9 @@
-package com.samsung.order_service.controller;
+package com.samsung.product_service.controller;
 
-import com.samsung.order_service.dto.request.OrderCreationRequest;
-import com.samsung.order_service.dto.request.OrderDetailCreationRequest;
-import com.samsung.order_service.dto.response.ApiResponse;
-import com.samsung.order_service.dto.response.OrderDetailResponse;
-import com.samsung.order_service.dto.response.OrderResponse;
-import com.samsung.order_service.service.OrderDetailService;
-import com.samsung.order_service.service.OrderService;
+import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
+import com.samsung.product_service.dto.response.ApiResponse;
+import com.samsung.product_service.dto.response.OrderDetailResponse;
+import com.samsung.product_service.service.OrderDetailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

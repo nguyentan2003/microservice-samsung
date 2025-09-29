@@ -1,0 +1,14 @@
+package com.samsung.order_service.exception;
+
+public class OrderStatus {
+    public static final String PENDING = "PENDING";
+    public static final String SUCCESS = "SUCCESS";
+    public static final String CANCELED = "CANCELED";
+    public static final String STOCK_RESERVED = "STOCK_RESERVED";
+    public static final String STOCK_FAILED = "STOCK_FAILED";
+    public static final String PAYMENT_SUCCESS = "PAYMENT_SUCCESS";
+    public static final String PAYMENT_FAILED = "PAYMENT_FAILED";
+
+    // Ngăn không cho tạo instance class này
+    private OrderStatus() {}
+}

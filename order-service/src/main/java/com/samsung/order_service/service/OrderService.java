@@ -6,6 +6,7 @@ import com.samsung.order_service.dto.request.OrderCreationRequest;
 import com.samsung.order_service.dto.response.OrderResponse;
 import com.samsung.order_service.entity.Order;
 
+import com.samsung.order_service.exception.OrderStatus;
 import com.samsung.order_service.mapper.OrderMapper;
 import com.samsung.order_service.repository.OrderRepository;
 import lombok.AccessLevel;
@@ -32,6 +33,7 @@ public class OrderService {
      TaskScheduler taskScheduler; // Dùng Spring TaskScheduler
 
     KafkaTemplate<String, Object> kafkaTemplate;
+    KafkaTemplate<String, String> kafkaTemplateString;
 
     public OrderResponse createOrder(OrderCreationRequest request){
         Order order = orderMapper.toOrder(request);
@@ -54,33 +56,20 @@ public class OrderService {
 
             if (order != null) {
 
-                if ("PENDING_PAYMENT".equals(order.getStatus())) {
-                    order.setStatus("CANCELED");
+                if (OrderStatus.STOCK_RESERVED.equals(order.getStatus())) {
+                    order.setStatus(OrderStatus.CANCELED);
                     orderRepository.save(order);
                     OrderStockStatus orderStockStatus = OrderStockStatus.builder()
                             .userId(order.getUserId())
                             .status(false)
                             .orderId(order.getId())
                             .build();
-                    kafkaTemplate.send("order-expired", orderStockStatus);
-                    log.info("order : "+orderId +" đã bị hủy");
+                    kafkaTemplateString.send("ReturnStock",orderId, orderId);
+                    log.info("order : " +orderId + " đã bị hủy và return stock");
                 }
             }
+            // 1phut -> 15p
         }, Date.from(Instant.now().plus(1, ChronoUnit.MINUTES)));
-    }
-    public void CancelOrder(String orderId){
-        Order order = orderRepository.findById(orderId).orElseThrow(()->{
-            throw new RuntimeException();
-        });
-        order.setStatus("CANCELED");
-        orderRepository.save(order);
-    }
-    public void TransPendingPayment(String orderId){
-        Order order = orderRepository.findById(orderId).orElseThrow(()->{
-            throw new RuntimeException();
-        });
-        order.setStatus("PENDING_PAYMENT");
-        orderRepository.save(order);
     }
 
     public Order getOrderById(String orderId){

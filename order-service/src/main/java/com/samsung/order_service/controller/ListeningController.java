@@ -37,7 +37,9 @@ public class ListeningController {
                 Order order = orderService.getOrderById(orderId);
                 kafkaObject.send(topic, orderId, orderMapper.toDataOrder(order));
             }
-            else kafkaTemplate.send(topic, orderId, orderId);
+            else {
+                kafkaTemplate.send(topic, orderId, orderId);
+            }
         }
     }
 
@@ -95,6 +97,7 @@ public class ListeningController {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_SUCCESS, null);
             case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
             case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
+            case OrderStatus.CANCELED -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
         }
     }
 }

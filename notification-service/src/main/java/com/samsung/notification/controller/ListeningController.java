@@ -29,5 +29,19 @@ public class ListeningController {
 
     }
 
+    @KafkaListener(topics = "ReturnStock")
+    public void ReturnStock(String orderId){
+
+        log.info("data - OrderCanceled - PaymentFailed : {}",orderId);
+
+    }
+
+    @KafkaListener(topics = "RefundMoney")
+    public void RefundMoney(String orderId){
+
+        log.info("data - OrderCanceled - StockNotAvailable : {}",orderId);
+
+    }
+
 }
 

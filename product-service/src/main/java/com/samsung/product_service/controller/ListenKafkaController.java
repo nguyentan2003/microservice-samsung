@@ -1,6 +1,7 @@
 package com.samsung.product_service.controller;
 
 import com.samsung.event.dto.DataOrderCreated;
+import com.samsung.event.dto.DataOrderProduct;
 import com.samsung.event.dto.OrderCreatedEvent;
 import com.samsung.event.dto.OrderStockStatus;
 import com.samsung.product_service.service.ProductService;
@@ -19,6 +20,7 @@ public class ListenKafkaController {
     private final ProductService productService;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplateObject;
 
     @KafkaListener(topics = "OrderCreated")
     public void listeningOrderCreated(DataOrderCreated event){
@@ -36,6 +38,18 @@ public class ListenKafkaController {
         }else {
             log.info("return stock {} fail",orderId);
         }
+    }
+
+    @KafkaListener(topics = "PushDataOrderSuccess")
+    public void PushDataOrderSuccess(String orderId){
+
+        DataOrderProduct dataOrderProduct = DataOrderProduct.builder()
+                .orderItemProducts( productService.getDataOrderProduct(orderId))
+                .orderId(orderId)
+                .build();
+
+        kafkaTemplateObject.send("OrderSuccessProduct3",orderId,dataOrderProduct);
+        log.info("gui data product for customer summary success : {}",dataOrderProduct);
     }
 
 }

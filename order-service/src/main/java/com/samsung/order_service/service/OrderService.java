@@ -1,7 +1,6 @@
 package com.samsung.order_service.service;
 
 import com.samsung.event.dto.DataOrderCreated;
-import com.samsung.event.dto.OrderStockStatus;
 import com.samsung.order_service.dto.request.OrderCreationRequest;
 import com.samsung.order_service.dto.response.OrderResponse;
 import com.samsung.order_service.entity.Order;
@@ -59,11 +58,7 @@ public class OrderService {
                 if (OrderStatus.STOCK_RESERVED.equals(order.getStatus())) {
                     order.setStatus(OrderStatus.CANCELED);
                     orderRepository.save(order);
-                    OrderStockStatus orderStockStatus = OrderStockStatus.builder()
-                            .userId(order.getUserId())
-                            .status(false)
-                            .orderId(order.getId())
-                            .build();
+
                     kafkaTemplateString.send("ReturnStock",orderId, orderId);
                     log.info("order : " +orderId + " đã bị hủy và return stock");
                 }

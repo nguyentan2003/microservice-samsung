@@ -4,15 +4,23 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DataEvent {
+public class DataOrder {
+
     String id;
-    String username;
-    String fullName;
-    String email;
-    String phone;
+
+    String userId;
+
+    String orderDate;
+
+    String status;
+
+    Long totalAmount;
+
+    String paymentType;
     String address;
+
 }

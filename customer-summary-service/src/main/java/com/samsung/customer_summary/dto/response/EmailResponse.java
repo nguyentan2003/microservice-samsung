@@ -1,4 +1,4 @@
-package com.samsung.event.dto;
+package com.samsung.customer_summary.dto.response;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,18 +7,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Map;
-
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NotificationEvent {
-    String channel;
-    String recipient;
-    String templateCode;
-    Map<String, Object> param;
-    String subject;
-    String body;
+public class EmailResponse {
+    String messageId;
 }

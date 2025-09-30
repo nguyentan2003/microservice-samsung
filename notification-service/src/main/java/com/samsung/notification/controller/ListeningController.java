@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.*;
 public class ListeningController {
     private final NotificationService notificationService;
 
-    @KafkaListener(topics = "OrderSuccess")
+    @KafkaListener(topics = "OrderSuccess3")
     public void OrderSuccess(DataOrder dataOrder){
 
         log.info("data - orderSuccess : {}",dataOrder);
 
     }
 
-    @KafkaListener(topics = "OrderCanceled")
+    @KafkaListener(topics = "OrderCanceled3")
     public void OrderCanceled(DataOrder dataOrder){
 
         log.info("data - OrderCanceled : {}",dataOrder);

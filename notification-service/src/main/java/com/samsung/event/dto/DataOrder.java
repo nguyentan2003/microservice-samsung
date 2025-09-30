@@ -21,5 +21,6 @@ public class DataOrder {
     Long totalAmount;
 
     String paymentType;
+    String address;
 
 }

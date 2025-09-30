@@ -4,23 +4,30 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-// them token vao request trước khi gửi đi trong giao tiếp giữa các service
+import jakarta.servlet.http.HttpServletRequest;
+
 @Slf4j
 public class AuthenticationRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate template) {
-        ServletRequestAttributes servletRequestAttributes =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 
-        var authHeader = servletRequestAttributes.getRequest().getHeader("Authorization");
+        if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
+            HttpServletRequest request = servletRequestAttributes.getRequest();
+            String authHeader = request.getHeader("Authorization");
 
-        log.info("Header: {}", authHeader);
+            log.info("Header Authorization: {}", authHeader);
 
-        // mot so request co the khong can token
-        if (StringUtils.hasText(authHeader))
-            template.header("Authorization", authHeader);
+            if (StringUtils.hasText(authHeader)) {
+                template.header("Authorization", authHeader);
+            }
+        } else {
+            // Trường hợp chạy ngoài HTTP request (Kafka, Scheduler, Async…)
+            log.debug("Không có ServletRequestAttributes → bỏ qua Authorization header.");
+        }
     }
 }

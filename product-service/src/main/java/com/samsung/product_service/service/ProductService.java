@@ -3,6 +3,7 @@ package com.samsung.product_service.service;
 import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.ItemDetail;
 import com.samsung.event.dto.OrderCreatedEvent;
+import com.samsung.event.dto.OrderItemProduct;
 import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.product_service.dto.request.ProductRequest;
 import com.samsung.product_service.dto.response.ProductResponse;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -152,6 +154,38 @@ public class ProductService {
         }
 
         return true;
+    }
+
+    public List<OrderItemProduct> getDataOrderProduct(String orderId) {
+        // Lấy danh sách orderDetail theo orderId
+        List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(orderId);
+        List<OrderItemProduct> orderItemProducts = new ArrayList<>();
+
+        if (orderDetails.isEmpty()) {
+            // log.warn("Không tìm thấy OrderDetail cho orderId={}", orderId);
+            return null;
+        }
+
+        for (OrderDetail orderDetail : orderDetails) {
+            Product product = productRepository.findById(orderDetail.getProductId())
+                    .orElse(null);
+
+            if (product == null) {
+                //  log.warn("Không tìm thấy Product với id={}", orderDetail.getProductId());
+                return null;
+            }
+            OrderItemProduct orderItemProduct = OrderItemProduct.builder()
+                    .productId(product.getId())
+                    .productName(product.getName())
+                    .imageUrl(product.getImageUrl())
+                    .priceAtTime(orderDetail.getPriceAtTime())
+                    .quantity(orderDetail.getQuantity())
+                    .build();
+            orderItemProducts.add(orderItemProduct);
+
+        }
+
+        return orderItemProducts;
     }
 
 

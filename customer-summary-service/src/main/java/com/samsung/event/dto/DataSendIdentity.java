@@ -4,12 +4,13 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PaymentStatus {
+public class DataSendIdentity {
+
     String orderId;
-//    // true la da giu cho con false la bi huy
-    Boolean status;
+    String userId;
+
 }

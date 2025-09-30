@@ -1,7 +1,5 @@
 package com.samsung.payment_service.service;
 
-
-import com.samsung.event.dto.PaymentStatus;
 import com.samsung.payment_service.dto.request.PaymentRequest;
 import com.samsung.payment_service.dto.response.PaymentResponse;
 import com.samsung.payment_service.entity.Payment;
@@ -15,15 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -51,5 +41,11 @@ public class PaymentService {
 
     public List<PaymentResponse> getListPayment(){
         return paymentMapper.toPaymentResponses(paymentRepository.findAll());
+    }
+
+    public Payment getPaymentByOrderId(String orderId){
+        return paymentRepository.findByOrderId(orderId).orElseThrow(()->{
+            throw  new RuntimeException();
+        });
     }
 }

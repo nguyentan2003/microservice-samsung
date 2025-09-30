@@ -1,0 +1,27 @@
+server:
+  port: 8008
+  servlet:
+    context-path: /customer-summary
+spring:
+  application:
+    name: customer-summary-service
+  data:
+    data:
+      mongodb:
+        host: localhost
+        port: 27017
+        username: root
+        password: root
+        database: topic9_customer_summary_service
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: customer-summary
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"

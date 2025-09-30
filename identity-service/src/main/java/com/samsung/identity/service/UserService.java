@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.samsung.event.dto.DataEvent;
+import com.samsung.event.dto.DataUserInfo;
 import com.samsung.event.dto.NotificationEvent;
 import com.samsung.identity.dto.request.ApiResponse;
 import com.samsung.identity.dto.request.ProfileCreationRequest;
@@ -160,5 +161,23 @@ public class UserService {
         userResponse.setFullName(userResponse.getFullName());
 
         return userResponse;
+    }
+
+    public DataUserInfo getDataInfo(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        ApiResponse<UserProfileResponse> apiProfile =  profileClient.getProfileByUserId(user.getId());
+        UserProfileResponse profile = apiProfile.getResult();
+        DataUserInfo dataUserInfo = DataUserInfo.builder()
+                .id(user.getId())
+                .email(profile.getEmail())
+                .phone(profile.getPhone())
+                .address(profile.getAddress())
+                .fullName(profile.getFullName())
+                .username(user.getUsername())
+                .build();
+
+
+        return dataUserInfo;
     }
 }

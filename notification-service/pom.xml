@@ -139,10 +139,10 @@
 				</executions>
 				<configuration>
 					<excludes>
-						<exclude>com/samsung/profile/dto/**</exclude>
-						<exclude>com/samsung/profile/entity/**</exclude>
-						<exclude>com/samsung/profile/mapper/**</exclude>
-						<exclude>com/samsung/profile/configuration/**</exclude>
+						<exclude>com/samsung/notification/dto/**</exclude>
+						<exclude>com/samsung/notification/entity/**</exclude>
+						<exclude>com/samsung/notification/mapper/**</exclude>
+						<exclude>com/samsung/notification/configuration/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

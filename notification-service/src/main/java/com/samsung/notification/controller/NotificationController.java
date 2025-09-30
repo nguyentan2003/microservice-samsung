@@ -1,13 +1,12 @@
 package com.samsung.notification.controller;
 
 
-import com.samsung.event.dto.DataEvent;
+
 import com.samsung.notification.entity.Notification;
 import com.samsung.notification.service.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 

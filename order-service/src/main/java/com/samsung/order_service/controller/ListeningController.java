@@ -1,6 +1,5 @@
 package com.samsung.order_service.controller;
 
-import com.samsung.event.dto.DataOrder;
 import com.samsung.order_service.entity.Order;
 import com.samsung.order_service.exception.OrderStatus;
 import com.samsung.order_service.exception.PaymentType;
@@ -33,7 +32,7 @@ public class ListeningController {
         orderService.updateOrderStatus(orderId, newStatus);
 
         if (topic != null) {
-            if(topic.equals("OrderSuccess") || topic.equals("OrderCanceled")) {
+            if(topic.equals("OrderSuccess3") || topic.equals("OrderCanceled3")) {
                 Order order = orderService.getOrderById(orderId);
                 kafkaObject.send(topic, orderId, orderMapper.toDataOrder(order));
             }
@@ -52,11 +51,11 @@ public class ListeningController {
         if (PaymentType.PREPAID.equals(order.getPaymentType())) {
             switch (order.getStatus()) {
                 case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_RESERVED, null);
-                case OrderStatus.PAYMENT_SUCCESS ->updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
+                case OrderStatus.PAYMENT_SUCCESS ->updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess3");
                 case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "ReturnStock");
             }
         } else {
-            updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
+            updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess3");
         }
     }
 
@@ -69,10 +68,10 @@ public class ListeningController {
             switch (order.getStatus()) {
                 case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_FAILED, null);
                 case OrderStatus.PAYMENT_SUCCESS -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
-                case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled");
+                case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled3");
             }
         } else {
-            updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled");
+            updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled3");
         }
     }
 
@@ -84,7 +83,7 @@ public class ListeningController {
         switch (order.getStatus()) {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_FAILED, null);
             case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.CANCELED, "ReturnStock");
-            case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled");
+            case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "OrderCanceled3");
         }
     }
 
@@ -95,7 +94,7 @@ public class ListeningController {
 
         switch (order.getStatus()) {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_SUCCESS, null);
-            case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess");
+            case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.SUCCESS, "OrderSuccess3");
             case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
             case OrderStatus.CANCELED -> updateAndSend(orderId, OrderStatus.CANCELED, "RefundMoney");
         }

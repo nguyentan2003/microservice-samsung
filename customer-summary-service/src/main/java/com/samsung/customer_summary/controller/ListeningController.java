@@ -42,7 +42,11 @@ public class ListeningController {
 
         customerSummaryRepository.save(customerSummary);
 
-        kafkaTemplate.send("PushDataOrderSuccess", dataOrder.getId(), dataOrder.getId());
+        DataPaymentType dataPaymentType = DataPaymentType.builder()
+                .orderId(dataOrder.getId())
+                .paymentType(dataOrder.getPaymentType())
+                .build();
+        objectKafkaTemplate.send("PushDataOrderSuccess2", dataOrder.getId(),dataPaymentType );
         DataSendIdentity dataSendIdentity = DataSendIdentity.builder()
                 .orderId(dataOrder.getId())
                 .userId(dataOrder.getUserId())

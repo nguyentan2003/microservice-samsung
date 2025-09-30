@@ -2,7 +2,7 @@ package com.samsung.product_service.controller;
 
 import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.DataOrderProduct;
-import com.samsung.event.dto.DataPaymentType;
+import com.samsung.event.dto.DataPushOrderSuccess;
 import com.samsung.product_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +39,15 @@ public class ListenKafkaController {
         }
     }
 
-    @KafkaListener(topics = "PushDataOrderSuccess2")
-    public void PushDataOrderSuccess(DataPaymentType dataPaymentType){
+    @KafkaListener(topics = "PushDataOrderSuccess3")
+    public void PushDataOrderSuccess(DataPushOrderSuccess dataPushOrderSuccess){
 
         DataOrderProduct dataOrderProduct = DataOrderProduct.builder()
-                .orderItemProducts( productService.getDataOrderProduct(dataPaymentType.getOrderId()))
-                .orderId(dataPaymentType.getOrderId())
+                .orderItemProducts( productService.getDataOrderProduct(dataPushOrderSuccess.getOrderId()))
+                .orderId(dataPushOrderSuccess.getOrderId())
                 .build();
 
-        kafkaTemplateObject.send("OrderSuccessProduct3",dataPaymentType.getOrderId(),dataOrderProduct);
+        kafkaTemplateObject.send("OrderSuccessProduct3",dataPushOrderSuccess.getOrderId(),dataOrderProduct);
         log.info("gui data product for customer summary success : {}",dataOrderProduct);
     }
 

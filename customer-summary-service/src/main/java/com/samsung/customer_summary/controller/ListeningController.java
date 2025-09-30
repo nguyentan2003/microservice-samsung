@@ -41,17 +41,15 @@ public class ListeningController {
                 .build();
 
         customerSummaryRepository.save(customerSummary);
-
-        DataPaymentType dataPaymentType = DataPaymentType.builder()
-                .orderId(dataOrder.getId())
-                .paymentType(dataOrder.getPaymentType())
-                .build();
-        objectKafkaTemplate.send("PushDataOrderSuccess2", dataOrder.getId(),dataPaymentType );
-        DataSendIdentity dataSendIdentity = DataSendIdentity.builder()
+        DataPushOrderSuccess dataPushOrderSuccess = DataPushOrderSuccess.builder()
                 .orderId(dataOrder.getId())
                 .userId(dataOrder.getUserId())
+                .paymentType(dataOrder.getPaymentType())
                 .build();
-        objectKafkaTemplate.send("PushDataOrderUserInfoSuccess", dataOrder.getId(), dataSendIdentity);
+
+        objectKafkaTemplate.send("PushDataOrderSuccess3", dataOrder.getId(),dataPushOrderSuccess );
+
+        //objectKafkaTemplate.send("PushDataOrderUserInfoSuccess", dataOrder.getId(), dataSendIdentity);
         log.info("tao customer summary success {}",dataOrder.getId());
     }
 

@@ -1,7 +1,7 @@
 package com.samsung.payment_service.controller;
 
 import com.samsung.event.dto.DataPayment;
-import com.samsung.event.dto.DataPaymentType;
+import com.samsung.event.dto.DataPushOrderSuccess;
 import com.samsung.payment_service.entity.Payment;
 import com.samsung.payment_service.mapper.PaymentMapper;
 import com.samsung.payment_service.service.PaymentService;
@@ -28,16 +28,16 @@ public class ListeningController {
 
     private final KafkaTemplate<String, Object> kafkaObject;
 
-    @KafkaListener(topics = "PushDataOrderSuccess2")
-    public void PushDataOrderSuccess(DataPaymentType dataPaymentType){
+    @KafkaListener(topics = "PushDataOrderSuccess3")
+    public void PushDataOrderSuccess(DataPushOrderSuccess dataPushOrderSuccess){
 
-        if(dataPaymentType.getPaymentType().equals("PREPAID")){
-            Payment payment = paymentService.getPaymentByOrderId(dataPaymentType.getOrderId());
+        if(dataPushOrderSuccess.getPaymentType().equals("PREPAID")){
+            Payment payment = paymentService.getPaymentByOrderId(dataPushOrderSuccess.getOrderId());
             DataPayment dataPayment = paymentMapper.toDataPayment(payment);
-            kafkaObject.send("OrderSuccessPayment3",dataPaymentType.getOrderId(),dataPayment);
+            kafkaObject.send("OrderSuccessPayment3",dataPushOrderSuccess.getOrderId(),dataPayment);
             log.info("gui data payment for customer summary success {}",dataPayment);
         }else{
-            log.info("{} order nay POSTPAID nen khong gui data",dataPaymentType.getOrderId());
+            log.info("{} order nay POSTPAID nen khong gui data",dataPushOrderSuccess.getOrderId());
         }
 
 

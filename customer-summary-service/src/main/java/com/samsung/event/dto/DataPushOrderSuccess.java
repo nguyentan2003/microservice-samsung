@@ -8,9 +8,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DataSendIdentity {
+public class DataPushOrderSuccess {
 
     String orderId;
     String userId;
+    String paymentType;
 
 }

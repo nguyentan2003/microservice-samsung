@@ -1,0 +1,1211 @@
+{
+	"info": {
+		"_postman_id": "5cbedf53-3125-4fd0-b83b-fde5da4cca1b",
+		"name": "Microservice Samsung",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28931279"
+	},
+	"item": [
+		{
+			"name": "identity",
+			"item": [
+				{
+					"name": "get token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/identity/auth/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"identity",
+								"auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"jame1\",\r\n    \"password\":\"12345678\",\r\n    \"email\":\"tan@gmail.com\",\r\n    \"fullName\":\"nguyen tan\",\r\n    \"phone\":\"0234234234\",\r\n    \"address\":\"thon 4\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/identity/users/registration",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"identity",
+								"users",
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/identity/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"identity",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "profile-service",
+			"item": [
+				{
+					"name": "create profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\":\"userId2\",\r\n    \"fullName\":\"fullName2\",\r\n    \"email\":\"email2\",\r\n    \"phone\":\"phone2\",\r\n    \"address\":\"address2\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/profile/internal/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"profile",
+								"internal",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8001/profile/user-profile/get-list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"profile",
+								"user-profile",
+								"get-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get profile by userId",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api-gateway",
+			"item": [
+				{
+					"name": "get token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/identity/auth/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"identity",
+								"auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/identity/auth/token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"identity",
+								"auth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1OTE1NTMzOCwiaWF0IjoxNzU5MTUxNzM4LCJqdGkiOiIwYTczODM3Ny02YmMxLTQ3NWQtYWMyNi0yNzMyODk4NzEzZWUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.v_5-vbkqkPZ57uCrf8A5wxeEN0EMcf5gz-byhtKAeQPUm_07llw1WQTydGilD1DDL1-CcP3sDUhBuEG-Tqcx4g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n \"userId\":\"ngan\",\r\n \"orderDate\":\"1231231\",\r\n \"status\":\"PENDING\",\r\n \"totalAmount\":1000000,\r\n \"paymentType\":\"PREPAID\",\r\n \"address\":\"Thốn 4, Quỳnh Giang\",\r\n \"listItemDetail\":[\r\n    {\r\n        \"productId\":\"4d332829-8ac5-400c-8131-eb99d269612b\",\r\n        \"quantity\":5,\r\n        \"priceAtTime\":10000\r\n    },\r\n    {\r\n        \"productId\":\"7920445c-b0a2-489e-8dfc-1b10d184b439\",\r\n        \"quantity\":5,\r\n        \"priceAtTime\":10000\r\n    }\r\n ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/order/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create shipping",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODcwODk3NCwiaWF0IjoxNzU4NzA1Mzc0LCJqdGkiOiJhOGYzNzgwMC1lNzQ0LTQyYzItYTgwMC0xMWRiMTJhNGMyODciLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.cv7PPf9AanseQNVOsOIMedEcvCIOR-8fJ8IpcOz3Sid_zPuk12LkydtJNM4qZVc5MSUKVI3Tg8V0M8HSO1Jt1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"123\",\r\n      \"address\":\"thon 4 quynh gian\",\r\n     \"trackingNumber\":\"12345678\",\r\n     \"status\":\"success\",\r\n     \"shippingDate\":\"25/09/2025\",\r\n     \"deliveryDate\":\"30/09/2025\",\r\n     \"currentPosition\":\"samsung SRV\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/shipping/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"shipping",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create payment",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODgwNDM1MywiaWF0IjoxNzU4ODAwNzUzLCJqdGkiOiI3NWNhYjljMS1mOTliLTQ3ODktOGY4MS05M2ZjYzYwOTU4NzIiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.zy2EApEfIanrovxae2mHoJ_9AVdmJld2fM15Jj6IlXkf8UmmPY5Php8O-WIsGQttPxJA6nNEQgaV5wMeS7Zr1w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"1234\",\r\n     \"paymentMethod\":\"MOMO\",\r\n     \"amount\":1000000,\r\n     \"status\" : \"SUCCESS\",\r\n     \"transactionId\":\"123456\",\r\n     \"paymentTime\":\"10:39__25/09/2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/payment/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"payment",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODYxODc3NSwiaWF0IjoxNzU4NjE1MTc1LCJqdGkiOiJhMDk5NDljMi0wOTMwLTRhYTgtOGFlYi1iNzAwMGY5ZGMyOTUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.WfWX4E0BwygWiYgwmgyPDBiZK-ZCkQ4lH4ZmkkDvYbhFOEqBvz4mQUNRtgsdwIX4yaXvcG3satbkOHVxiuNk9g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/identity/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"identity",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list order",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODcwODk3NCwiaWF0IjoxNzU4NzA1Mzc0LCJqdGkiOiJhOGYzNzgwMC1lNzQ0LTQyYzItYTgwMC0xMWRiMTJhNGMyODciLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.cv7PPf9AanseQNVOsOIMedEcvCIOR-8fJ8IpcOz3Sid_zPuk12LkydtJNM4qZVc5MSUKVI3Tg8V0M8HSO1Jt1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/order/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list order by order id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODcwODk3NCwiaWF0IjoxNzU4NzA1Mzc0LCJqdGkiOiJhOGYzNzgwMC1lNzQ0LTQyYzItYTgwMC0xMWRiMTJhNGMyODciLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.cv7PPf9AanseQNVOsOIMedEcvCIOR-8fJ8IpcOz3Sid_zPuk12LkydtJNM4qZVc5MSUKVI3Tg8V0M8HSO1Jt1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/order/1a12231e-48b0-416b-a690-6e22d3ea8923",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"order",
+								"1a12231e-48b0-416b-a690-6e22d3ea8923"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODYyMDYzNywiaWF0IjoxNzU4NjE3MDM3LCJqdGkiOiIyOWNmNmEwZi00ZTk2LTQ3NzMtOGY4MC0wOWEzYmE4YmEyM2YiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.SWoPrnt1n2T42oW8K4y8ttML9skoZ6LmAsTBcGdoBX8cF9X_f0Huq88lfAzGGigYj0CjhZF9ZJXdCluj6oOPTw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/profile/user-profile/get-list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"user-profile",
+								"get-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get profile by userID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODYxODc3NSwiaWF0IjoxNzU4NjE1MTc1LCJqdGkiOiJhMDk5NDljMi0wOTMwLTRhYTgtOGFlYi1iNzAwMGY5ZGMyOTUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.WfWX4E0BwygWiYgwmgyPDBiZK-ZCkQ4lH4ZmkkDvYbhFOEqBvz4mQUNRtgsdwIX4yaXvcG3satbkOHVxiuNk9g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\":\"admin\",\r\n    \"password\":\"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/identity/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"identity",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "send message client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY4NjE3MiwiaWF0IjoxNzU4NjgyNTcyLCJqdGkiOiI2ZGIyOGFmZi1jMzVhLTQxNDgtOTRjMS0wY2VkMmE2MzQ4YTciLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.S1c_IGG33FGHPPD0tzHXM3j3wdi4tdjtypE1Nq-E-ozF_gcILmsPe3N5C_seu8g5J3KurvgFB2qKU4xlDlgZww",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n  \"userId\": \"admin\",\r\n  \"type\": \"INFO\",\r\n  \"message\": \"Bạn có thông báo mới từ hệ thống\",\r\n  \"sentAt\": \"2025-09-23T13:00:00\",\r\n  \"isRead\": false\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8888/api/v1/notifications/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8888",
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get ALL message",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notification-service",
+			"item": [
+				{
+					"name": "send message client",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n  \"userId\": \"nguyentrongtan\",\r\n  \"type\": \"INFO\",\r\n  \"message\": \"Bạn có thông báo mới từ hệ thống\",\r\n  \"sentAt\": \"2025-09-23T13:00:00\",\r\n  \"isRead\": false\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8006/notifications/send",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8006",
+							"path": [
+								"notifications",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8006/notifications/getAll",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8006",
+							"path": [
+								"notifications",
+								"getAll"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order-service",
+			"item": [
+				{
+					"name": "create order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n \"userId\":\"tan1\",\r\n \"orderDate\":\"1231231\",\r\n \"status\":\"PENDING\",\r\n \"totalAmount\":1000000\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8003/order/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"order",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create order detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \r\n \"orderId\":\"tan1\",\r\n \"productId\":\"1231231\",\r\n \"quantity\":10,\r\n \"priceAtTime\":100000\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8003/order/order-detail/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"order",
+								"order-detail",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list order",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "s"
+						},
+						"url": {
+							"raw": "http://localhost:8003/order/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"order",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list order detail",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "sdsfdf"
+						},
+						"url": {
+							"raw": "http://localhost:8003/order/order-detail/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"order",
+								"order-detail",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get order by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "s"
+						},
+						"url": {
+							"raw": "http://localhost:8003/order/9d15081f-9635-4c5a-892b-fd9541e83d19",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"order",
+								"9d15081f-9635-4c5a-892b-fd9541e83d19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get order detail by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODY0NDczNCwiaWF0IjoxNzU4NjQxMTM0LCJqdGkiOiJkYjUzNTdlMC00YjFiLTQ1YTItODc1MS04MzNiYjA5YzRlNjUiLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.yPXQ4PK2kBQQ4B3X6dF4PeFQvTWSrzpI0MqSVYuwdS-sW7AxSt1PG-kmuU6gCO0jYtN1cjAuoo5fEa0AVxXA2w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "s"
+						},
+						"url": {
+							"raw": "http://localhost:8003/order/order-detail/9d15081f-9635-4c5a-892b-fd9541e83d19",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8003",
+							"path": [
+								"order",
+								"order-detail",
+								"9d15081f-9635-4c5a-892b-fd9541e83d19"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "product-service",
+			"item": [
+				{
+					"name": "create product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODcwODk3NCwiaWF0IjoxNzU4NzA1Mzc0LCJqdGkiOiJhOGYzNzgwMC1lNzQ0LTQyYzItYTgwMC0xMWRiMTJhNGMyODciLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.cv7PPf9AanseQNVOsOIMedEcvCIOR-8fJ8IpcOz3Sid_zPuk12LkydtJNM4qZVc5MSUKVI3Tg8V0M8HSO1Jt1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Laptop Dell Inspiron",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Laptop core i7, 16GB",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "Laptop",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "22000000",
+									"type": "text"
+								},
+								{
+									"key": "stockQuantity",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/TAN/Downloads/img1.jfif"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8002/product/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8002",
+							"path": [
+								"product",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all product",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzYW1zdW5nLmNvbSIsInN1YiI6IjY2NTg4MTk1LTA5ZWYtNGQ5MC05OGM5LWNkMjQ5NjBjNjUxMyIsImV4cCI6MTc1ODcwODk3NCwiaWF0IjoxNzU4NzA1Mzc0LCJqdGkiOiJhOGYzNzgwMC1lNzQ0LTQyYzItYTgwMC0xMWRiMTJhNGMyODciLCJzY29wZSI6IlJPTEVfQURNSU4ifQ.cv7PPf9AanseQNVOsOIMedEcvCIOR-8fJ8IpcOz3Sid_zPuk12LkydtJNM4qZVc5MSUKVI3Tg8V0M8HSO1Jt1Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Laptop Dell Inspiron",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Laptop core i7, 16GB",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "Laptop",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "22000000",
+									"type": "text"
+								},
+								{
+									"key": "stockQuantity",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/TAN/Downloads/img1.jfif"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8002/product/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8002",
+							"path": [
+								"product",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get product by id",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "payment-service",
+			"item": [
+				{
+					"name": "create payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"123\",\r\n     \"paymentMethod\":\"MOMO\",\r\n     \"amount\":1000000,\r\n     \"status\" : \"SUCCESS\",\r\n     \"transactionId\":\"123456\",\r\n     \"paymentTime\":\"10:39__25/09/2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8005/payment/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8005",
+							"path": [
+								"payment",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list payment",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"123\",\r\n     \"paymentMethod\":\"MOMO\",\r\n     \"amount\":1000000,\r\n     status : \"success\",\r\n    String transactionId;\r\n    String paymentTime;\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8005/payment/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8005",
+							"path": [
+								"payment",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "shipping-service",
+			"item": [
+				{
+					"name": "create shipping",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"123\",\r\n      \"address\":\"thon 4 quynh gian\",\r\n     \"trackingNumber\":\"12345678\",\r\n     \"status\":\"success\",\r\n     \"shippingDate\":\"25/09/2025\",\r\n     \"deliveryDate\":\"30/09/2025\",\r\n     \"currentPosition\":\"samsung SRV\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8006/shipping/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8006",
+							"path": [
+								"shipping",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get list shipping",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"orderId\":\"123\",\r\n     \"paymentMethod\":\"MOMO\",\r\n     \"amount\":1000000,\r\n     status : \"success\",\r\n    String transactionId;\r\n    String paymentTime;\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8006/shipping/list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8006",
+							"path": [
+								"shipping",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

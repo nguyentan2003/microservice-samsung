@@ -40,11 +40,11 @@ public class OrderService {
         orderRepository.save(order);
         OrderResponse orderResponse= orderMapper.toOrderResponse(order);
 
-        DataOrderCreated dataOrderCreated = DataOrderCreated.builder()
-                .listItemDetail(request.getListItemDetail())
-                .orderId(order.getId())
-                .build();
-        kafkaTemplate.send("OrderCreated",order.getId(),dataOrderCreated);
+        DataOrderCreated dataOrderCreated = orderMapper.toDataOrderCreated(request);
+        dataOrderCreated.setOrderId(order.getId());
+        dataOrderCreated.setStatus(order.getStatus());
+
+        kafkaTemplate.send("OrderCreated2",order.getId(),dataOrderCreated);
         return orderResponse;
     }
 

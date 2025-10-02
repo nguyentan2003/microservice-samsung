@@ -1,5 +1,6 @@
 package com.samsung.payment_service.service;
 
+import com.samsung.event.dto.DataPayment;
 import com.samsung.payment_service.dto.request.PaymentRequest;
 import com.samsung.payment_service.dto.response.PaymentResponse;
 import com.samsung.payment_service.entity.Payment;
@@ -24,13 +25,17 @@ public class PaymentService {
     PaymentMapper paymentMapper;
     PaymentRepository paymentRepository;
     KafkaTemplate<String, String> kafkaTemplate;
+    KafkaTemplate<String, Object> objectKafkaTemplate;
 
     public PaymentResponse createPayment(PaymentRequest paymentRequest){
 
         if("SUCCESS".equals(paymentRequest.getStatus())){
             Payment payment = paymentMapper.toPayment(paymentRequest);
 
+            DataPayment dataPayment = paymentMapper.toDataPayment(payment);
             kafkaTemplate.send("PaymentSuccess",paymentRequest.getOrderId(),paymentRequest.getOrderId());
+            objectKafkaTemplate.send("DataPaymentSuccess",paymentRequest.getOrderId(),dataPayment);
+
             return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
         }
         else{

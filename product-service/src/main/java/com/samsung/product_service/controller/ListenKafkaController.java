@@ -21,7 +21,7 @@ public class ListenKafkaController {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final KafkaTemplate<String, Object> kafkaTemplateObject;
 
-    @KafkaListener(topics = "OrderCreated")
+    @KafkaListener(topics = "OrderCreated2")
     public void listeningOrderCreated(DataOrderCreated event){
         if(productService.checkStock(event)){
             kafkaTemplate.send("OrderStockReserved",event.getOrderId(),event.getOrderId());
@@ -29,6 +29,13 @@ public class ListenKafkaController {
             kafkaTemplate.send("OrderStockFailed",event.getOrderId(),event.getOrderId());
             log.info("het hang mot so san pham");
         }
+
+        DataOrderProduct dataOrderProduct = DataOrderProduct.builder()
+                .orderId(event.getOrderId())
+                .orderItemProducts(productService.getStocks(event))
+                .build();
+        kafkaTemplateObject.send("OrderProductData",event.getOrderId(),dataOrderProduct);
+
     }
     @KafkaListener(topics = "ReturnStock")
     public void listeningReturnStock(String orderId){
@@ -39,16 +46,16 @@ public class ListenKafkaController {
         }
     }
 
-    @KafkaListener(topics = "PushDataOrderSuccess3")
-    public void PushDataOrderSuccess(DataPushOrderSuccess dataPushOrderSuccess){
-
-        DataOrderProduct dataOrderProduct = DataOrderProduct.builder()
-                .orderItemProducts( productService.getDataOrderProduct(dataPushOrderSuccess.getOrderId()))
-                .orderId(dataPushOrderSuccess.getOrderId())
-                .build();
-
-        kafkaTemplateObject.send("OrderSuccessProduct3",dataPushOrderSuccess.getOrderId(),dataOrderProduct);
-        log.info("gui data product for customer summary success : {}",dataOrderProduct);
-    }
+//    @KafkaListener(topics = "PushDataOrderSuccess3")
+//    public void PushDataOrderSuccess(DataPushOrderSuccess dataPushOrderSuccess){
+//
+//        DataOrderProduct dataOrderProduct = DataOrderProduct.builder()
+//                .orderItemProducts( productService.getDataOrderProduct(dataPushOrderSuccess.getOrderId()))
+//                .orderId(dataPushOrderSuccess.getOrderId())
+//                .build();
+//
+//        kafkaTemplateObject.send("OrderSuccessProduct3",dataPushOrderSuccess.getOrderId(),dataOrderProduct);
+//        log.info("gui data product for customer summary success : {}",dataOrderProduct);
+//    }
 
 }

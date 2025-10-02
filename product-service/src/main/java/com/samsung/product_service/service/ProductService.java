@@ -121,7 +121,26 @@ public class ProductService {
 
         return true;
     }
+    public List<OrderItemProduct> getStocks(DataOrderCreated orderCreatedEvent) {
 
+        List<OrderItemProduct> orderItemProductList = new ArrayList<>();
+        // Nếu tất cả sản phẩm đều đủ → tiến hành reserve
+        for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
+            Product product = productRepository.findById(item.getProductId())
+                    .orElseThrow();
+
+            OrderItemProduct orderItemProduct = OrderItemProduct.builder()
+                    .quantity(item.getQuantity())
+                    .priceAtTime(item.getPriceAtTime())
+                    .productName(product.getName())
+                    .imageUrl(product.getImageUrl())
+                    .productId(product.getId())
+                    .build();
+            orderItemProductList.add(orderItemProduct);
+        }
+
+        return orderItemProductList;
+    }
     @Transactional
     public Boolean returnStockByOrderId(String orderId) {
         // Lấy danh sách orderDetail theo orderId

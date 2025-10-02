@@ -37,6 +37,10 @@ public class ListeningController {
                 kafkaObject.send(topic, orderId, orderMapper.toDataOrder(order));
             }
             else {
+                if(newStatus.equals(OrderStatus.CANCELED)){
+                    Order order = orderService.getOrderById(orderId);
+                    kafkaObject.send("OrderCanceled3", orderId, orderMapper.toDataOrder(order));
+                }
                 kafkaTemplate.send(topic, orderId, orderId);
             }
         }

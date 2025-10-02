@@ -34,7 +34,6 @@ public class CustomerSummary {
     String paymentType;
     String orderStatus;
     String shippingAddress;
-
     // Payment
     String paymentMethod;
     String paymentStatus;
@@ -42,6 +41,7 @@ public class CustomerSummary {
     String paymentTime;
 
     // Danh sách sản phẩm đã chọn trong order
+    String statusStock;
     List<OrderItemSummary> orderItemSummaries;
 
     LocalDateTime createdAt;

@@ -1,6 +1,8 @@
 package com.samsung.customer_summary.controller;
 
 import com.samsung.customer_summary.entity.CustomerSummary;
+import com.samsung.customer_summary.entity.OrderItemSummary;
+import com.samsung.customer_summary.exception.OrderStatus;
 import com.samsung.customer_summary.mapper.CustomerSummaryMapper;
 import com.samsung.customer_summary.repository.CustomerSummaryRepository;
 import com.samsung.customer_summary.service.CustomerSummaryService;
@@ -8,12 +10,16 @@ import com.samsung.event.dto.*;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -21,16 +27,15 @@ import java.time.LocalDateTime;
 public class ListeningController {
     private final CustomerSummaryService customerSummaryService;
     private final CustomerSummaryRepository customerSummaryRepository;
+    private final MongoTemplate mongoTemplate;
     private final CustomerSummaryMapper customerSummaryMapper;
-    private final KafkaTemplate<String, String> kafkaTemplate;
     private final KafkaTemplate<String, Object> objectKafkaTemplate;
 
-    @KafkaListener(topics = "OrderSuccess3")
-    public void GetDataFromOrderService(DataOrder dataOrder){
-        log.info("helo check");
+    @KafkaListener(topics = "OrderCreated2")
+    public void listeningOrderCreated(DataOrderCreated dataOrder){
         CustomerSummary customerSummary = CustomerSummary.builder()
                 .userId(dataOrder.getUserId())
-                .orderId(dataOrder.getId())
+                .orderId(dataOrder.getOrderId())
                 .shippingAddress(dataOrder.getAddress())
                 .orderDate(dataOrder.getOrderDate())
                 .orderStatus(dataOrder.getStatus())
@@ -40,58 +45,135 @@ public class ListeningController {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        customerSummaryRepository.save(customerSummary);
-        DataPushOrderSuccess dataPushOrderSuccess = DataPushOrderSuccess.builder()
-                .orderId(dataOrder.getId())
-                .userId(dataOrder.getUserId())
-                .paymentType(dataOrder.getPaymentType())
-                .build();
-
-        objectKafkaTemplate.send("PushDataOrderSuccess3", dataOrder.getId(),dataPushOrderSuccess );
-
-        //objectKafkaTemplate.send("PushDataOrderUserInfoSuccess", dataOrder.getId(), dataSendIdentity);
-        log.info("tao customer summary success {}",dataOrder.getId());
+        customerSummaryRepository.save(customerSummary); // Insert mới
+        objectKafkaTemplate.send("CustomerSummaryOrderCreated",dataOrder.getOrderId(),dataOrder);
+        log.info("Tạo customer summary thành công cho orderId={}", dataOrder.getOrderId());
     }
 
-    @KafkaListener(topics = "OrderSuccessUserInfo3")
+    @KafkaListener(topics = "OrderProductData")
+    public void ListeningOrderProductData(DataOrderProduct dataOrderProduct){
+
+        Query query = new Query(Criteria.where("orderId").is(dataOrderProduct.getOrderId()));
+        Update update = new Update()
+                .set("orderItemSummaries", dataOrderProduct.getOrderItemProducts());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update data product orderId={}", dataOrderProduct.getOrderId());
+    }
+
+    @KafkaListener(topics = "PushDataInfoOrderCreated")
     public void GetDataFromProfile(DataUserInfo dataUserInfo){
-        CustomerSummary customerSummary = customerSummaryService.getSummaryByOrderId(dataUserInfo.getOrderId());
-        customerSummary.setUsername(dataUserInfo.getUsername());
-        customerSummary.setFullName(dataUserInfo.getFullName());
-        customerSummary.setEmail(dataUserInfo.getEmail());
-        customerSummary.setPhone(dataUserInfo.getPhone());
-        customerSummary.setAddress(dataUserInfo.getAddress());
 
-        customerSummaryRepository.save(customerSummary);
-        log.info("update userinfo for customer summary success {}",dataUserInfo.getOrderId());
+        Query query = new Query(Criteria.where("orderId").is(dataUserInfo.getOrderId()));
+        Update update = new Update()
+                .set("username", dataUserInfo.getUsername())
+                .set("fullName", dataUserInfo.getFullName())
+                .set("email", dataUserInfo.getEmail())
+                .set("phone", dataUserInfo.getPhone())
+                .set("address", dataUserInfo.getAddress());
 
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update user info cho orderId={}", dataUserInfo.getOrderId());
     }
 
-    @KafkaListener(topics = "OrderSuccessPayment3")
-    public void GetDataFromPayment(DataPayment dataPayment){
-        CustomerSummary customerSummary = customerSummaryService.getSummaryByOrderId(dataPayment.getOrderId());
+    @KafkaListener(topics = "DataPaymentSuccess")
+    public void listeningPaymentSuccess(DataPayment dataPayment){
 
-        customerSummary.setPaymentMethod(dataPayment.getPaymentMethod());
-        customerSummary.setTotalAmount(dataPayment.getAmount());
-        customerSummary.setPaymentStatus(dataPayment.getStatus());
-        customerSummary.setTransactionId(dataPayment.getTransactionId());
-        customerSummary.setPaymentTime(dataPayment.getPaymentTime());
+        Query query = new Query(Criteria.where("orderId").is(dataPayment.getOrderId()));
+        Update update = new Update()
+                .set("paymentMethod", dataPayment.getPaymentMethod())
+                .set("totalAmount", dataPayment.getAmount())
+                .set("paymentStatus", OrderStatus.PAYMENT_SUCCESS)
+                .set("transactionId", dataPayment.getTransactionId())
+                .set("paymentTime", dataPayment.getPaymentTime());
 
-        customerSummaryRepository.save(customerSummary);
-        log.info("update payment for customer summary success {}",dataPayment.getOrderId());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
 
+        log.info("Update payment thành công cho orderId={}", dataPayment.getOrderId());
     }
 
-    @KafkaListener(topics = "OrderSuccessProduct3")
-    public void GetDataFromProduct(DataOrderProduct dataOrderProduct){
-        CustomerSummary customerSummary = customerSummaryService.getSummaryByOrderId(dataOrderProduct.getOrderId());
+    @KafkaListener(topics = "RefundMoney")
+    public void listeningRefundMoney(String orderId){
 
-       customerSummary.setOrderItemSummaries(customerSummaryMapper.toOrderItemSummaries(dataOrderProduct.getOrderItemProducts()));
+        Query query = new Query(Criteria.where("orderId").is(orderId));
+        Update update = new Update()
+                .set("paymentStatus", OrderStatus.REFUND_MONEY)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
 
-        customerSummaryRepository.save(customerSummary);
-        log.info("update list product for customer summary success {}",dataOrderProduct.getOrderId());
+        log.info("Update refund money cho orderId={}", orderId);
     }
 
+    @KafkaListener(topics = "PaymentFailed")
+    public void listeningPaymentFailed(String orderId){
 
+        Query query = new Query(Criteria.where("orderId").is(orderId));
+        Update update = new Update()
+                .set("paymentStatus", OrderStatus.PAYMENT_FAILED)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update payment failed cho orderId={}", orderId);
+    }
+
+    @KafkaListener(topics = "OrderStockReserved")
+    public void listeningOrderStockReserved(String orderId){
+
+        Query query = new Query(Criteria.where("orderId").is(orderId));
+        Update update = new Update()
+                .set("statusStock", OrderStatus.STOCK_RESERVED)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update stock reserved cho orderId={}", orderId);
+    }
+
+    @KafkaListener(topics = "ReturnStock")
+    public void listeningReturnStock(String orderId){
+
+        Query query = new Query(Criteria.where("orderId").is(orderId));
+        Update update = new Update()
+                .set("statusStock", OrderStatus.RETURN_STOCK)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update return stock cho orderId={}", orderId);
+    }
+
+    @KafkaListener(topics = "OrderStockFailed")
+    public void listeningOrderStockFailed(String orderId){
+
+        Query query = new Query(Criteria.where("orderId").is(orderId));
+        Update update = new Update()
+                .set("statusStock", OrderStatus.STOCK_FAILED)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update stock failed cho orderId={}", orderId);
+    }
+
+    @KafkaListener(topics = "OrderSuccess3")
+    public void listeningOrderSuccess3(DataOrder dataOrder){
+
+        Query query = new Query(Criteria.where("orderId").is(dataOrder.getId()));
+        Update update = new Update()
+                .set("orderStatus", OrderStatus.SUCCESS)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update order -> success cho orderId={}", dataOrder.getId());
+    }
+
+    @KafkaListener(topics = "OrderCanceled3")
+    public void listeningOrderCanceled3(DataOrder dataOrder){
+
+        Query query = new Query(Criteria.where("orderId").is(dataOrder.getId()));
+        Update update = new Update()
+                .set("orderStatus", OrderStatus.CANCELED)
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update order -> canceled cho orderId={}", dataOrder.getId());
+    }
 }
-

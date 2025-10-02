@@ -1,5 +1,6 @@
 package com.samsung.notification.controller;
 
+import com.samsung.data_static.Topic;
 import com.samsung.event.dto.DataOrder;
 
 import com.samsung.notification.service.NotificationService;
@@ -15,28 +16,28 @@ import org.springframework.web.bind.annotation.*;
 public class ListeningController {
     private final NotificationService notificationService;
 
-    @KafkaListener(topics = "OrderSuccess3")
+    @KafkaListener(topics = Topic.ORDER_SUCCESS)
     public void OrderSuccess(DataOrder dataOrder){
 
         log.info("data - orderSuccess : {}",dataOrder);
 
     }
 
-    @KafkaListener(topics = "OrderCanceled3")
+    @KafkaListener(topics = Topic.ORDER_CANCELED)
     public void OrderCanceled(DataOrder dataOrder){
 
         log.info("data - OrderCanceled : {}",dataOrder);
 
     }
 
-    @KafkaListener(topics = "ReturnStock")
+    @KafkaListener(topics = Topic.RETURN_STOCK)
     public void ReturnStock(String orderId){
 
         log.info("data - OrderCanceled - PaymentFailed : {}",orderId);
 
     }
 
-    @KafkaListener(topics = "RefundMoney")
+    @KafkaListener(topics = Topic.REFUND_MONEY)
     public void RefundMoney(String orderId){
 
         log.info("data - OrderCanceled - StockNotAvailable : {}",orderId);

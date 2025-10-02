@@ -1,5 +1,6 @@
 package com.samsung.payment_service.controller;
 
+import com.samsung.data_static.Topic;
 import com.samsung.event.dto.DataPayment;
 import com.samsung.event.dto.DataPushOrderSuccess;
 import com.samsung.payment_service.entity.Payment;
@@ -20,7 +21,7 @@ public class ListeningController {
     private final PaymentMapper paymentMapper;
 
 
-    @KafkaListener(topics = "RefundMoney")
+    @KafkaListener(topics = Topic.REFUND_MONEY)
     public void RefundMoney(String orderId){
         log.info("hoàn tiền thành công cho order : {}",orderId);
 

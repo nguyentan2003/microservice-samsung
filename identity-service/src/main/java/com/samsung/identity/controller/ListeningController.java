@@ -1,5 +1,6 @@
 package com.samsung.identity.controller;
 
+import com.samsung.data_static.Topic;
 import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.DataPushOrderSuccess;
 import com.samsung.event.dto.DataUserInfo;
@@ -24,13 +25,13 @@ public class ListeningController {
 
     private final KafkaTemplate<String, Object> kafkaObject;
 
-    @KafkaListener(topics = "CustomerSummaryOrderCreated")
+    @KafkaListener(topics = Topic.CUSTOMER_SUMMARY_ORDER_CREATED)
     public void PushDataOrderCreated(DataOrderCreated dataOrderCreated){
         DataUserInfo dataUserInfo = userService.getDataInfo(dataOrderCreated.getUserId());
         dataUserInfo.setOrderId(dataOrderCreated.getOrderId());
 
 
-        kafkaObject.send("PushDataInfoOrderCreated",dataOrderCreated.getOrderId(),dataUserInfo);
+        kafkaObject.send(Topic.PUSH_DATA_INFO_ORDER_CREATED,dataOrderCreated.getOrderId(),dataUserInfo);
         log.info("gui data user info for customer summary create : {}",dataUserInfo);
     }
 

@@ -1,11 +1,11 @@
 package com.samsung.customer_summary.controller;
 
 import com.samsung.customer_summary.entity.CustomerSummary;
-import com.samsung.customer_summary.entity.OrderItemSummary;
-import com.samsung.customer_summary.exception.OrderStatus;
+import com.samsung.data_static.OrderStatus;
 import com.samsung.customer_summary.mapper.CustomerSummaryMapper;
 import com.samsung.customer_summary.repository.CustomerSummaryRepository;
 import com.samsung.customer_summary.service.CustomerSummaryService;
+import com.samsung.data_static.Topic;
 import com.samsung.event.dto.*;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -31,7 +30,7 @@ public class ListeningController {
     private final CustomerSummaryMapper customerSummaryMapper;
     private final KafkaTemplate<String, Object> objectKafkaTemplate;
 
-    @KafkaListener(topics = "OrderCreated2")
+    @KafkaListener(topics = Topic.ORDER_CREATED)
     public void listeningOrderCreated(DataOrderCreated dataOrder){
         CustomerSummary customerSummary = CustomerSummary.builder()
                 .userId(dataOrder.getUserId())
@@ -46,11 +45,11 @@ public class ListeningController {
                 .build();
 
         customerSummaryRepository.save(customerSummary); // Insert mới
-        objectKafkaTemplate.send("CustomerSummaryOrderCreated",dataOrder.getOrderId(),dataOrder);
+        objectKafkaTemplate.send(Topic.CUSTOMER_SUMMARY_ORDER_CREATED,dataOrder.getOrderId(),dataOrder);
         log.info("Tạo customer summary thành công cho orderId={}", dataOrder.getOrderId());
     }
 
-    @KafkaListener(topics = "OrderProductData")
+    @KafkaListener(topics = Topic.ORDER_PRODUCT_DATA)
     public void ListeningOrderProductData(DataOrderProduct dataOrderProduct){
 
         Query query = new Query(Criteria.where("orderId").is(dataOrderProduct.getOrderId()));
@@ -61,7 +60,7 @@ public class ListeningController {
         log.info("Update data product orderId={}", dataOrderProduct.getOrderId());
     }
 
-    @KafkaListener(topics = "PushDataInfoOrderCreated")
+    @KafkaListener(topics = Topic.PUSH_DATA_INFO_ORDER_CREATED)
     public void GetDataFromProfile(DataUserInfo dataUserInfo){
 
         Query query = new Query(Criteria.where("orderId").is(dataUserInfo.getOrderId()));
@@ -77,7 +76,7 @@ public class ListeningController {
         log.info("Update user info cho orderId={}", dataUserInfo.getOrderId());
     }
 
-    @KafkaListener(topics = "DataPaymentSuccess")
+    @KafkaListener(topics = Topic.DATA_PAYMENT_SUCCESS)
     public void listeningPaymentSuccess(DataPayment dataPayment){
 
         Query query = new Query(Criteria.where("orderId").is(dataPayment.getOrderId()));
@@ -93,7 +92,7 @@ public class ListeningController {
         log.info("Update payment thành công cho orderId={}", dataPayment.getOrderId());
     }
 
-    @KafkaListener(topics = "RefundMoney")
+    @KafkaListener(topics = Topic.REFUND_MONEY)
     public void listeningRefundMoney(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
@@ -105,7 +104,7 @@ public class ListeningController {
         log.info("Update refund money cho orderId={}", orderId);
     }
 
-    @KafkaListener(topics = "PaymentFailed")
+    @KafkaListener(topics = Topic.PAYMENT_FAILED)
     public void listeningPaymentFailed(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
@@ -117,7 +116,7 @@ public class ListeningController {
         log.info("Update payment failed cho orderId={}", orderId);
     }
 
-    @KafkaListener(topics = "OrderStockReserved")
+    @KafkaListener(topics = Topic.ORDER_STOCK_RESERVED)
     public void listeningOrderStockReserved(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
@@ -129,7 +128,7 @@ public class ListeningController {
         log.info("Update stock reserved cho orderId={}", orderId);
     }
 
-    @KafkaListener(topics = "ReturnStock")
+    @KafkaListener(topics = Topic.RETURN_STOCK)
     public void listeningReturnStock(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
@@ -141,7 +140,7 @@ public class ListeningController {
         log.info("Update return stock cho orderId={}", orderId);
     }
 
-    @KafkaListener(topics = "OrderStockFailed")
+    @KafkaListener(topics = Topic.ORDER_STOCK_FAILED)
     public void listeningOrderStockFailed(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
@@ -153,7 +152,7 @@ public class ListeningController {
         log.info("Update stock failed cho orderId={}", orderId);
     }
 
-    @KafkaListener(topics = "OrderSuccess3")
+    @KafkaListener(topics = Topic.ORDER_SUCCESS)
     public void listeningOrderSuccess3(DataOrder dataOrder){
 
         Query query = new Query(Criteria.where("orderId").is(dataOrder.getId()));
@@ -165,7 +164,7 @@ public class ListeningController {
         log.info("Update order -> success cho orderId={}", dataOrder.getId());
     }
 
-    @KafkaListener(topics = "OrderCanceled3")
+    @KafkaListener(topics = Topic.ORDER_CANCELED)
     public void listeningOrderCanceled3(DataOrder dataOrder){
 
         Query query = new Query(Criteria.where("orderId").is(dataOrder.getId()));

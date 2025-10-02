@@ -1,4 +1,4 @@
-package com.samsung.order_service.exception;
+package com.samsung.data_static;
 
 public class OrderStatus {
     public static final String PENDING = "PENDING";

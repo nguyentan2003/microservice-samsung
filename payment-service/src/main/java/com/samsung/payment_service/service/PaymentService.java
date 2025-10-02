@@ -1,5 +1,7 @@
 package com.samsung.payment_service.service;
 
+import com.samsung.data_static.OrderStatus;
+import com.samsung.data_static.Topic;
 import com.samsung.event.dto.DataPayment;
 import com.samsung.payment_service.dto.request.PaymentRequest;
 import com.samsung.payment_service.dto.response.PaymentResponse;
@@ -29,17 +31,17 @@ public class PaymentService {
 
     public PaymentResponse createPayment(PaymentRequest paymentRequest){
 
-        if("SUCCESS".equals(paymentRequest.getStatus())){
+        if(OrderStatus.SUCCESS.equals(paymentRequest.getStatus())){
             Payment payment = paymentMapper.toPayment(paymentRequest);
 
             DataPayment dataPayment = paymentMapper.toDataPayment(payment);
-            kafkaTemplate.send("PaymentSuccess",paymentRequest.getOrderId(),paymentRequest.getOrderId());
-            objectKafkaTemplate.send("DataPaymentSuccess",paymentRequest.getOrderId(),dataPayment);
+            kafkaTemplate.send(Topic.PAYMENT_SUCCESS,paymentRequest.getOrderId(),paymentRequest.getOrderId());
+            objectKafkaTemplate.send(Topic.DATA_PAYMENT_SUCCESS,paymentRequest.getOrderId(),dataPayment);
 
             return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
         }
         else{
-            kafkaTemplate.send("PaymentFailed",paymentRequest.getOrderId(),paymentRequest.getOrderId());
+            kafkaTemplate.send(Topic.PAYMENT_FAILED,paymentRequest.getOrderId(),paymentRequest.getOrderId());
             throw new AppException(ErrorCode.PAYMENT_FAILS);
         }
     }

@@ -1,11 +1,12 @@
 package com.samsung.order_service.service;
 
+import com.samsung.data_static.Topic;
 import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.order_service.dto.request.OrderCreationRequest;
 import com.samsung.order_service.dto.response.OrderResponse;
 import com.samsung.order_service.entity.Order;
 
-import com.samsung.order_service.exception.OrderStatus;
+import com.samsung.data_static.OrderStatus;
 import com.samsung.order_service.mapper.OrderMapper;
 import com.samsung.order_service.repository.OrderRepository;
 import lombok.AccessLevel;
@@ -36,7 +37,7 @@ public class OrderService {
 
     public OrderResponse createOrder(OrderCreationRequest request){
         Order order = orderMapper.toOrder(request);
-        order.setStatus("PENDING");
+        order.setStatus(OrderStatus.PENDING);
         orderRepository.save(order);
         OrderResponse orderResponse= orderMapper.toOrderResponse(order);
 
@@ -44,7 +45,7 @@ public class OrderService {
         dataOrderCreated.setOrderId(order.getId());
         dataOrderCreated.setStatus(order.getStatus());
 
-        kafkaTemplate.send("OrderCreated2",order.getId(),dataOrderCreated);
+        kafkaTemplate.send(Topic.ORDER_CREATED,order.getId(),dataOrderCreated);
         return orderResponse;
     }
 
@@ -59,7 +60,7 @@ public class OrderService {
                     order.setStatus(OrderStatus.CANCELED);
                     orderRepository.save(order);
 
-                    kafkaTemplateString.send("ReturnStock",orderId, orderId);
+                    kafkaTemplateString.send(Topic.RETURN_STOCK,orderId, orderId);
                     log.info("order : " +orderId + " đã bị hủy và return stock");
                 }
             }

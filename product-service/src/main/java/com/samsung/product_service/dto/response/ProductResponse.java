@@ -18,5 +18,6 @@ public class ProductResponse {
     String type;
     Long price;
     Long stockQuantity;
+    Long reservedStock ;
     String imageUrl; // link ảnh hoặc tên file
 }

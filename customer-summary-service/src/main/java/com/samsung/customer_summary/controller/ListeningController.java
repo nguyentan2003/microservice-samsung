@@ -1,6 +1,7 @@
 package com.samsung.customer_summary.controller;
 
 import com.samsung.customer_summary.entity.CustomerSummary;
+import com.samsung.customer_summary.service.PendingMessageService;
 import com.samsung.data_static.OrderStatus;
 import com.samsung.customer_summary.mapper.CustomerSummaryMapper;
 import com.samsung.customer_summary.repository.CustomerSummaryRepository;
@@ -27,7 +28,7 @@ public class ListeningController {
     private final CustomerSummaryService customerSummaryService;
     private final CustomerSummaryRepository customerSummaryRepository;
     private final MongoTemplate mongoTemplate;
-    private final CustomerSummaryMapper customerSummaryMapper;
+    private final PendingMessageService pendingMessageService;
     private final KafkaTemplate<String, Object> objectKafkaTemplate;
 
     @KafkaListener(topics = Topic.ORDER_CREATED)
@@ -53,6 +54,13 @@ public class ListeningController {
     public void ListeningOrderProductData(DataOrderProduct dataOrderProduct){
 
         Query query = new Query(Criteria.where("orderId").is(dataOrderProduct.getOrderId()));
+
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.ORDER_PRODUCT_DATA, dataOrderProduct, dataOrderProduct.getOrderId());
+            return;
+        }
         Update update = new Update()
                 .set("orderItemSummaries", dataOrderProduct.getOrderItemProducts());
         mongoTemplate.updateFirst(query, update, CustomerSummary.class);
@@ -64,6 +72,14 @@ public class ListeningController {
     public void GetDataFromProfile(DataUserInfo dataUserInfo){
 
         Query query = new Query(Criteria.where("orderId").is(dataUserInfo.getOrderId()));
+
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.PUSH_DATA_INFO_ORDER_CREATED, dataUserInfo, dataUserInfo.getOrderId());
+            return;
+        }
+
         Update update = new Update()
                 .set("username", dataUserInfo.getUsername())
                 .set("fullName", dataUserInfo.getFullName())
@@ -80,6 +96,14 @@ public class ListeningController {
     public void listeningPaymentSuccess(DataPayment dataPayment){
 
         Query query = new Query(Criteria.where("orderId").is(dataPayment.getOrderId()));
+
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.DATA_PAYMENT_SUCCESS, dataPayment, dataPayment.getOrderId());
+            return;
+        }
+
         Update update = new Update()
                 .set("paymentMethod", dataPayment.getPaymentMethod())
                 .set("totalAmount", dataPayment.getAmount())
@@ -96,6 +120,14 @@ public class ListeningController {
     public void listeningRefundMoney(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
+
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.REFUND_MONEY, orderId, orderId);
+            return;
+        }
+
         Update update = new Update()
                 .set("paymentStatus", OrderStatus.REFUND_MONEY)
                 .set("updatedAt", LocalDateTime.now());
@@ -108,6 +140,12 @@ public class ListeningController {
     public void listeningPaymentFailed(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.PAYMENT_FAILED, orderId, orderId);
+            return;
+        }
         Update update = new Update()
                 .set("paymentStatus", OrderStatus.PAYMENT_FAILED)
                 .set("updatedAt", LocalDateTime.now());
@@ -120,6 +158,12 @@ public class ListeningController {
     public void listeningOrderStockReserved(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.ORDER_STOCK_RESERVED, orderId, orderId);
+            return;
+        }
         Update update = new Update()
                 .set("statusStock", OrderStatus.STOCK_RESERVED)
                 .set("updatedAt", LocalDateTime.now());
@@ -132,6 +176,12 @@ public class ListeningController {
     public void listeningReturnStock(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.RETURN_STOCK, orderId, orderId);
+            return;
+        }
         Update update = new Update()
                 .set("statusStock", OrderStatus.RETURN_STOCK)
                 .set("updatedAt", LocalDateTime.now());
@@ -144,6 +194,12 @@ public class ListeningController {
     public void listeningOrderStockFailed(String orderId){
 
         Query query = new Query(Criteria.where("orderId").is(orderId));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.ORDER_STOCK_FAILED, orderId, orderId);
+            return;
+        }
         Update update = new Update()
                 .set("statusStock", OrderStatus.STOCK_FAILED)
                 .set("updatedAt", LocalDateTime.now());
@@ -156,6 +212,12 @@ public class ListeningController {
     public void listeningOrderSuccess3(DataOrder dataOrder){
 
         Query query = new Query(Criteria.where("orderId").is(dataOrder.getId()));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.ORDER_SUCCESS, dataOrder, dataOrder.getId());
+            return;
+        }
         Update update = new Update()
                 .set("orderStatus", OrderStatus.SUCCESS)
                 .set("updatedAt", LocalDateTime.now());
@@ -168,6 +230,12 @@ public class ListeningController {
     public void listeningOrderCanceled3(DataOrder dataOrder){
 
         Query query = new Query(Criteria.where("orderId").is(dataOrder.getId()));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+
+        if (summary == null) {
+            pendingMessageService.savePending(Topic.REFUND_MONEY, dataOrder, dataOrder.getId());
+            return;
+        }
         Update update = new Update()
                 .set("orderStatus", OrderStatus.CANCELED)
                 .set("updatedAt", LocalDateTime.now());

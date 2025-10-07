@@ -158,7 +158,7 @@ public class UserService {
         userResponse.setEmail(profile.getEmail());
         userResponse.setAddress(profile.getAddress());
         userResponse.setPhone(profile.getPhone());
-        userResponse.setFullName(userResponse.getFullName());
+        userResponse.setFullName(profile.getFullName());
 
         return userResponse;
     }

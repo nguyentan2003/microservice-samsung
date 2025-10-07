@@ -38,7 +38,7 @@ public class ProductService {
     private final OrderDetailService orderDetailService;
     private final OrderDetailRepository orderDetailRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR = "C:/java/Java Spring Boot/microservice-samsung/uploads/";
 
     public ProductResponse createProduct(ProductRequest request) throws IOException {
         // Tạo thư mục nếu chưa có

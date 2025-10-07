@@ -30,4 +30,15 @@ public class CustomerSummaryController {
                 .result(service.getSummaryByOrderId(orderId))
                 .build();
     }
+
+    @GetMapping("/get-list-order-user/{userId}")
+    public ApiResponse<List<CustomerSummary>> getListSummaryByUserId(@PathVariable String userId) {
+        return ApiResponse.<List<CustomerSummary>>builder()
+                .result(service.getListSummaryByUserId(userId))
+                .build();
+    }
+    @DeleteMapping("/deleteAll")
+    public void deleteAll(){
+        service.deleteAll();
+    }
 }

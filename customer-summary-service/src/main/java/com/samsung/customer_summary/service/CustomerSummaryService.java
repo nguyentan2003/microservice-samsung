@@ -7,6 +7,7 @@ import com.samsung.customer_summary.repository.CustomerSummaryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,5 +26,18 @@ public class CustomerSummaryService {
                 .orElseThrow(() -> new AppException(ErrorCode.CUSTOMER_SUMMARY_SERVICE_NOT_FOUND));
     }
 
+    public List<CustomerSummary> getListSummaryByUserId(String orderId) {
+        List<CustomerSummary> list = new ArrayList<>();
+        repository.findAll().forEach(item->{
+            if(orderId.equals(item.getUserId())){
+                list.add(item);
+            }
+        });
+        return list;
+    }
+
+    public void deleteAll(){
+        repository.deleteAll();
+    }
 
 }

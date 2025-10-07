@@ -130,6 +130,7 @@ public class ListeningController {
 
         Update update = new Update()
                 .set("paymentStatus", OrderStatus.REFUND_MONEY)
+                .set("orderStatus", OrderStatus.CANCELED)
                 .set("updatedAt", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, CustomerSummary.class);
 
@@ -148,6 +149,7 @@ public class ListeningController {
         }
         Update update = new Update()
                 .set("paymentStatus", OrderStatus.PAYMENT_FAILED)
+                .set("orderStatus", OrderStatus.CANCELED)
                 .set("updatedAt", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, CustomerSummary.class);
 
@@ -184,6 +186,7 @@ public class ListeningController {
         }
         Update update = new Update()
                 .set("statusStock", OrderStatus.RETURN_STOCK)
+                .set("orderStatus", OrderStatus.CANCELED)
                 .set("updatedAt", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, CustomerSummary.class);
 
@@ -202,6 +205,7 @@ public class ListeningController {
         }
         Update update = new Update()
                 .set("statusStock", OrderStatus.STOCK_FAILED)
+                .set("orderStatus", OrderStatus.CANCELED)
                 .set("updatedAt", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, CustomerSummary.class);
 

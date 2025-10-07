@@ -98,6 +98,7 @@ public class PendingMessageProcessor {
                         String refundOrderId = objectMapper.convertValue(msg.getPayload(), String.class);
                         Update updateRefund = new Update()
                                 .set("paymentStatus", OrderStatus.REFUND_MONEY)
+                                .set("orderStatus", OrderStatus.CANCELED)
                                 .set("updatedAt", LocalDateTime.now());
                         mongoTemplate.updateFirst(new Query(Criteria.where("orderId").is(refundOrderId)),
                                 updateRefund, CustomerSummary.class);
@@ -109,6 +110,7 @@ public class PendingMessageProcessor {
                         String failedOrderId = objectMapper.convertValue(msg.getPayload(), String.class);
                         Update updateFailed = new Update()
                                 .set("paymentStatus", OrderStatus.PAYMENT_FAILED)
+                                .set("orderStatus", OrderStatus.CANCELED)
                                 .set("updatedAt", LocalDateTime.now());
                         mongoTemplate.updateFirst(new Query(Criteria.where("orderId").is(failedOrderId)),
                                 updateFailed, CustomerSummary.class);
@@ -131,6 +133,7 @@ public class PendingMessageProcessor {
                         String returnOrderId = objectMapper.convertValue(msg.getPayload(), String.class);
                         Update updateReturnStock = new Update()
                                 .set("statusStock", OrderStatus.RETURN_STOCK)
+                                .set("orderStatus", OrderStatus.CANCELED)
                                 .set("updatedAt", LocalDateTime.now());
                         mongoTemplate.updateFirst(new Query(Criteria.where("orderId").is(returnOrderId)),
                                 updateReturnStock, CustomerSummary.class);
@@ -142,6 +145,7 @@ public class PendingMessageProcessor {
                         String stockFailedOrderId = objectMapper.convertValue(msg.getPayload(), String.class);
                         Update updateStockFailed = new Update()
                                 .set("statusStock", OrderStatus.STOCK_FAILED)
+                                .set("orderStatus", OrderStatus.CANCELED)
                                 .set("updatedAt", LocalDateTime.now());
                         mongoTemplate.updateFirst(new Query(Criteria.where("orderId").is(stockFailedOrderId)),
                                 updateStockFailed, CustomerSummary.class);

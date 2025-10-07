@@ -4,7 +4,6 @@ import com.samsung.customer_summary.dto.ApiResponse;
 import com.samsung.customer_summary.entity.CustomerSummary;
 import com.samsung.customer_summary.service.CustomerSummaryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

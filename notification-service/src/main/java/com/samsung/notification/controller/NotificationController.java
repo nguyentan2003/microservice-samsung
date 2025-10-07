@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -34,6 +35,12 @@ public class NotificationController {
     public Object getAll() {
 
         return notificationService.getAll();
+    }
+
+    @GetMapping("/get-notification-of-user/{userId}")
+    public List<Notification> getListOfUser(@PathVariable String userId) {
+
+        return notificationService.getListOfUser(userId);
     }
 }
 

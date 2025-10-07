@@ -46,6 +46,8 @@ public class OrderService {
         dataOrderCreated.setStatus(order.getStatus());
 
         kafkaTemplate.send(Topic.ORDER_CREATED,order.getId(),dataOrderCreated);
+
+        scheduleOrderTimeout(order.getId());
         return orderResponse;
     }
 

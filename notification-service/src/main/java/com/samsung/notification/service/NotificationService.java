@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.security.core.Authentication;
@@ -58,7 +60,6 @@ public class NotificationService {
         return emitter;
     }
 
-
     // Gửi thông báo cho user
     public void sendNotification(Notification notification) {
          // lưu DB
@@ -82,6 +83,14 @@ public class NotificationService {
         // lưu DB
 
       return repository.findAll();
+    }
+
+    public List<Notification> getListOfUser(String userId) {
+        List<Notification> list = new ArrayList<>();
+         repository.findAll().forEach(item->{
+             if(item.getUserId().equals(userId)) list.add(item);
+        });
+        return list;
     }
 }
 

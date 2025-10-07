@@ -30,10 +30,8 @@ public class PaymentService {
     KafkaTemplate<String, Object> objectKafkaTemplate;
 
     public PaymentResponse createPayment(PaymentRequest paymentRequest){
-
+        Payment payment = paymentMapper.toPayment(paymentRequest);
         if(OrderStatus.SUCCESS.equals(paymentRequest.getStatus())){
-            Payment payment = paymentMapper.toPayment(paymentRequest);
-
             DataPayment dataPayment = paymentMapper.toDataPayment(payment);
             kafkaTemplate.send(Topic.PAYMENT_SUCCESS,paymentRequest.getOrderId(),paymentRequest.getOrderId());
             objectKafkaTemplate.send(Topic.DATA_PAYMENT_SUCCESS,paymentRequest.getOrderId(),dataPayment);
@@ -42,7 +40,7 @@ public class PaymentService {
         }
         else{
             kafkaTemplate.send(Topic.PAYMENT_FAILED,paymentRequest.getOrderId(),paymentRequest.getOrderId());
-            throw new AppException(ErrorCode.PAYMENT_FAILS);
+            return paymentMapper.toPaymentResponse(payment);
         }
     }
 

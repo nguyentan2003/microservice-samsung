@@ -1,6 +1,7 @@
 package com.samsung.order_service.controller;
 
 import com.samsung.data_static.Topic;
+import com.samsung.event.dto.NotificationStatus;
 import com.samsung.order_service.entity.Order;
 import com.samsung.data_static.OrderStatus;
 import com.samsung.order_service.exception.PaymentType;
@@ -33,25 +34,45 @@ public class ListeningController {
         orderService.updateOrderStatus(orderId, newStatus);
 
         if (topic != null) {
+            Order order = orderService.getOrderById(orderId);
+            NotificationStatus notificationStatus = NotificationStatus.builder()
+                    .userId(order.getUserId())
+                    .orderId(orderId)
+                    .message(topic)
+                    .build();
+
             if(topic.equals(Topic.ORDER_SUCCESS) || topic.equals(Topic.ORDER_CANCELED)) {
-                Order order = orderService.getOrderById(orderId);
+
                 kafkaObject.send(topic, orderId, orderMapper.toDataOrder(order));
             }
             else {
                 if(newStatus.equals(OrderStatus.CANCELED)){
-                    Order order = orderService.getOrderById(orderId);
                     kafkaObject.send(Topic.ORDER_CANCELED, orderId, orderMapper.toDataOrder(order));
+                    NotificationStatus notificationStatus1 = NotificationStatus.builder()
+                            .userId(order.getUserId())
+                            .orderId(orderId)
+                            .message(Topic.ORDER_CANCELED)
+                            .build();
+                    kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus1);
                 }
                 kafkaTemplate.send(topic, orderId, orderId);
             }
+
+            kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
         }
     }
-
 
     @KafkaListener(topics = Topic.ORDER_STOCK_RESERVED)
     public void listeningStockSuccess(String orderId) {
         Order order = orderService.getOrderById(orderId);
         if (order == null) return;
+
+        NotificationStatus notificationStatus = NotificationStatus.builder()
+                .message(Topic.ORDER_STOCK_RESERVED)
+                .userId(order.getUserId())
+                .orderId(orderId)
+                .build();
+        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
 
         if (PaymentType.PREPAID.equals(order.getPaymentType())) {
             switch (order.getStatus()) {
@@ -69,6 +90,13 @@ public class ListeningController {
         Order order = orderService.getOrderById(orderId);
         if (order == null) return;
 
+        NotificationStatus notificationStatus = NotificationStatus.builder()
+                .message(Topic.ORDER_STOCK_FAILED)
+                .userId(order.getUserId())
+                .orderId(orderId)
+                .build();
+        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
+
         if (PaymentType.PREPAID.equals(order.getPaymentType())) {
             switch (order.getStatus()) {
                 case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_FAILED, null);
@@ -84,6 +112,12 @@ public class ListeningController {
     public void listeningPaymentFailed(String orderId) {
         Order order = orderService.getOrderById(orderId);
         if (order == null) return;
+        NotificationStatus notificationStatus = NotificationStatus.builder()
+                .message(Topic.PAYMENT_FAILED)
+                .userId(order.getUserId())
+                .orderId(orderId)
+                .build();
+        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
 
         switch (order.getStatus()) {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_FAILED, null);
@@ -96,6 +130,12 @@ public class ListeningController {
     public void listeningPaymentSuccess(String orderId) {
         Order order = orderService.getOrderById(orderId);
         if (order == null) return;
+        NotificationStatus notificationStatus = NotificationStatus.builder()
+                .message(Topic.PAYMENT_SUCCESS)
+                .userId(order.getUserId())
+                .orderId(orderId)
+                .build();
+        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
 
         switch (order.getStatus()) {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_SUCCESS, null);

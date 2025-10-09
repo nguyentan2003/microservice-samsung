@@ -2,6 +2,7 @@ package com.samsung.order_service.service;
 
 import com.samsung.data_static.Topic;
 import com.samsung.event.dto.DataOrderCreated;
+import com.samsung.event.dto.NotificationStatus;
 import com.samsung.order_service.dto.request.OrderCreationRequest;
 import com.samsung.order_service.dto.response.OrderResponse;
 import com.samsung.order_service.entity.Order;
@@ -47,6 +48,12 @@ public class OrderService {
 
         kafkaTemplate.send(Topic.ORDER_CREATED,order.getId(),dataOrderCreated);
 
+        kafkaTemplate.send(Topic.NOTIFICATION_STATUS,order.getId(), NotificationStatus.builder()
+                        .message(Topic.ORDER_CREATED)
+                        .orderId(order.getId())
+                        .userId(order.getUserId())
+                .build());
+
         scheduleOrderTimeout(order.getId());
         return orderResponse;
     }
@@ -63,6 +70,13 @@ public class OrderService {
                     orderRepository.save(order);
 
                     kafkaTemplateString.send(Topic.RETURN_STOCK,orderId, orderId);
+
+                    kafkaTemplate.send(Topic.NOTIFICATION_STATUS,order.getId(), NotificationStatus.builder()
+                            .message(Topic.ORDER_TIME_OUT)
+                            .orderId(order.getId())
+                            .userId(order.getUserId())
+                            .build());
+
                     log.info("order : " +orderId + " đã bị hủy và return stock");
                 }
             }

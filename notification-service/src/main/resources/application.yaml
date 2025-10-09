@@ -5,6 +5,8 @@ server:
 spring:
   application:
     name: notification-service
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
   data:
     data:
       mongodb:

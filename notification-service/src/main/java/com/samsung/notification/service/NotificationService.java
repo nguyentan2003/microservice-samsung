@@ -15,15 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
-
-
-
 
 @Service
 public class NotificationService {
@@ -34,8 +34,15 @@ public class NotificationService {
     public NotificationService(NotificationRepository repository) {
         this.repository = repository;
     }
+    public void markAllAsRead(String userId) {
+        List<Notification> list = repository.findByUserId(userId);
+        for (Notification n : list) {
+            n.setRead(true);
+        }
+        repository.saveAll(list);
+    }
 
-    // Đăng ký kết nối SSE cho user
+
     // Đăng ký kết nối SSE cho user
     public SseEmitter subscribe(String userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -85,12 +92,18 @@ public class NotificationService {
       return repository.findAll();
     }
 
-    public List<Notification> getListOfUser(String userId) {
-        List<Notification> list = new ArrayList<>();
-         repository.findAll().forEach(item->{
-             if(item.getUserId().equals(userId)) list.add(item);
-        });
-        return list;
+    public void deleteAll() {
+        // lưu DB
+
+         repository.deleteAll();
     }
+
+    public List<Notification> getListOfUser(String userId) {
+        return repository.findAll().stream()
+                .filter(item -> item.getUserId().equals(userId))
+                .sorted(Comparator.comparing(Notification::getSentAt).reversed()) // sắp xếp giảm dần theo thời gian
+                .collect(Collectors.toList());
+    }
+
 }
 

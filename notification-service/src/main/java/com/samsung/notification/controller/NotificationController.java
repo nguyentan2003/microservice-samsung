@@ -2,6 +2,7 @@ package com.samsung.notification.controller;
 
 
 
+import com.samsung.notification.dto.ApiResponse;
 import com.samsung.notification.entity.Notification;
 import com.samsung.notification.service.NotificationService;
 
@@ -25,6 +26,16 @@ public class NotificationController {
         return notificationService.subscribe(userId);
     }
 
+    @PatchMapping("/mark-read/{userId}")
+    public ApiResponse<Boolean> markAsRead(@PathVariable String userId) {
+        notificationService.markAllAsRead(userId);
+        return ApiResponse.<Boolean>builder()
+                .message("Mark read success")
+                .result(true)
+                .code(1000)
+                .build();
+    }
+
     @PostMapping("/send")
     public String send(@RequestBody Notification notification) {
         notification.setSentAt(LocalDateTime.now());
@@ -38,9 +49,23 @@ public class NotificationController {
     }
 
     @GetMapping("/get-notification-of-user/{userId}")
-    public List<Notification> getListOfUser(@PathVariable String userId) {
+    public ApiResponse<List<Notification>> getListOfUser(@PathVariable String userId) {
 
-        return notificationService.getListOfUser(userId);
+        return ApiResponse.<List<Notification>>builder()
+                .code(1000)
+                .result(notificationService.getListOfUser(userId))
+                .message("Success")
+                .build();
+    }
+
+    @DeleteMapping("/delete-all")
+    public ApiResponse<Boolean> deleteAll() {
+        notificationService.deleteAll();
+        return ApiResponse.<Boolean>builder()
+                .code(1000)
+                .result(true)
+                .message("Success")
+                .build();
     }
 }
 

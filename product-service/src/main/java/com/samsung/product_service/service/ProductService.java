@@ -71,6 +71,32 @@ public class ProductService {
         return productMapper.toProductResponse(product);
     }
 
+    public ProductResponse updateProduct(String productId,ProductRequest request) throws IOException {
+        // Lưu DB
+        Product product = productRepository.findById(productId).orElseThrow(()->{
+            throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
+        });
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            // Đặt tên file tránh trùng
+            MultipartFile imageFile = request.getImage();
+            String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            Files.write(filePath, imageFile.getBytes());
+
+            product.setImageUrl(fileName);
+        }
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setType(request.getType());
+        product.setPrice(request.getPrice());
+        product.setStockQuantity(request.getStockQuantity());
+
+        productRepository.save(product);
+
+        return productMapper.toProductResponse(product);
+    }
+
     public List<ProductResponse> getAllProducts() {
         return productMapper.toProductResponses(productRepository.findAll());
     }

@@ -144,10 +144,35 @@ public class UserService {
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
 
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+        // Lấy danh sách tất cả user trong database
+        List<UserResponse> users = userRepository.findAll()
+                .stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+
+        // Gọi sang service profile để lấy thông tin profile cho từng user
+        return users.stream().map(userResponse -> {
+            try {
+                // Gọi API profile client
+                ApiResponse<UserProfileResponse> apiProfile = profileClient.getProfileByUserId(userResponse.getId());
+                UserProfileResponse profile = apiProfile.getResult();
+
+                if (profile != null) {
+                    userResponse.setEmail(profile.getEmail());
+                    userResponse.setAddress(profile.getAddress());
+                    userResponse.setPhone(profile.getPhone());
+                    userResponse.setFullName(profile.getFullName());
+                }
+            } catch (Exception e) {
+                log.warn("Không thể lấy profile cho userId={} : {}", userResponse.getId(), e.getMessage());
+            }
+
+            return userResponse;
+        }).toList();
     }
 
-   // @PreAuthorize("hasRole('ADMIN')")
+
+    // @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUser(String id) {
         UserResponse userResponse = userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));

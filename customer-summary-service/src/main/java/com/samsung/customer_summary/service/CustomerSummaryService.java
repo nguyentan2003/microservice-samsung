@@ -8,8 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +28,12 @@ public class CustomerSummaryService {
                 .orElseThrow(() -> new AppException(ErrorCode.CUSTOMER_SUMMARY_SERVICE_NOT_FOUND));
     }
 
-    public List<CustomerSummary> getListSummaryByUserId(String orderId) {
-        List<CustomerSummary> list = new ArrayList<>();
-        repository.findAll().forEach(item->{
-            if(orderId.equals(item.getUserId())){
-                list.add(item);
-            }
-        });
-        return list;
+    public List<CustomerSummary> getListSummaryByUserId(String userId) {
+        return repository.findAll().stream()
+                .filter(item -> item.getUserId().equals(userId))
+                .sorted(Comparator.comparing(CustomerSummary::getOrderDate).reversed()) // sắp xếp giảm dần theo thời gian
+                .collect(Collectors.toList());
+
     }
 
     public void deleteAll(){

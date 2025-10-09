@@ -7,6 +7,7 @@ import com.samsung.product_service.dto.response.ProductResponse;
 import com.samsung.product_service.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,15 +21,16 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<ProductResponse> createProduct(
             @RequestParam("name") String name,
             @RequestParam("description") String description,
             @RequestParam("type") String type,
             @RequestParam("price") Long price,
             @RequestParam("stockQuantity") Long stockQuantity,
-            @RequestParam("image") MultipartFile image
+            @RequestParam(value = "image", required = false) MultipartFile image
     ) throws IOException {
+
         ProductRequest request = ProductRequest.builder()
                 .name(name)
                 .description(description)
@@ -42,6 +44,33 @@ public class ProductController {
                 .result(productService.createProduct(request))
                 .build();
     }
+
+
+    @PutMapping(value = "/update-product/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<ProductResponse> updateProduct(
+            @PathVariable String productId,
+            @RequestParam("name") String name,
+            @RequestParam("description") String description,
+            @RequestParam("type") String type,
+            @RequestParam("price") Long price,
+            @RequestParam("stockQuantity") Long stockQuantity,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) throws IOException {
+
+        ProductRequest request = ProductRequest.builder()
+                .name(name)
+                .description(description)
+                .type(type)
+                .price(price)
+                .stockQuantity(stockQuantity)
+                .image(image)
+                .build();
+
+        return ApiResponse.<ProductResponse>builder()
+                .result(productService.updateProduct(productId, request))
+                .build();
+    }
+
 
     @GetMapping("/list")
     public ApiResponse<List<ProductResponse>> getAllProducts() {

@@ -14,10 +14,10 @@ public class Topic {
     public static final String ORDER_SUCCESS = "OrderSuccess3";
     public static final String ORDER_CANCELED = "OrderCanceled3";
     public static final String RETURN_STOCK = "ReturnStock";
-
+    public static final String ORDER_CHANGE_STATUS_SHIPPING = "OrderChangeStatusShipping";
     public static final String ORDER_TIME_OUT = "OrderTimeOut";
     public static final String NOTIFICATION_STATUS = "NotificationStatus";
-
+    public static final String UPDATE_ORDER_STATUS = "UpdateOrderStatus";
     // Ngăn không cho tạo instance class này
     private Topic() {}
 }

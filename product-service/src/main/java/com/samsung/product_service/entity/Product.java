@@ -16,6 +16,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+
     String name;
     String description;
     String type;
@@ -25,10 +26,8 @@ public class Product {
     Long stockQuantity;
 
     @Column(name = "reserved_stock")
-    Long reservedStock ;
+    Long reservedStock;
 
     @Column(name = "image_url")
     String imageUrl;
-
-
 }

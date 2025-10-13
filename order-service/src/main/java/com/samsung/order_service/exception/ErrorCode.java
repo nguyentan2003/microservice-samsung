@@ -18,8 +18,10 @@ public enum ErrorCode {
     INVALID_EMAIL(1009, "Invalid email address", HttpStatus.BAD_REQUEST),
     EMAIL_IS_REQUIRED(1009, "Email is required", HttpStatus.BAD_REQUEST),
     ORDER_NOT_EXISTED(1010, "order not existed", HttpStatus.NOT_FOUND),
+
     ORDER_DETAIL_NOT_EXISTED(1011, "order_detail not existed", HttpStatus.NOT_FOUND),
-    ERROR_CALL_ORDER_DETAIL(1012, "error call order-detail", HttpStatus.NOT_FOUND),
+    ERROR_CALL_ORDER_DETAIL(1012, "error call order-detail", HttpStatus.BAD_REQUEST),
+    STATUS_NOT_MATCH(1012, "status order is canceled or shipping", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

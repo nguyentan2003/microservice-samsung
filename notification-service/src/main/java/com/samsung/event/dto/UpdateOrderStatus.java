@@ -1,6 +1,5 @@
 package com.samsung.event.dto;
 
-import java.util.List;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,9 +8,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderCreatedEvent {
+public class UpdateOrderStatus {
+
     String orderId;
     String userId;
-    List<ItemDetail> listItemDetail;
-    Long totalAmount;
+    String status;
 }

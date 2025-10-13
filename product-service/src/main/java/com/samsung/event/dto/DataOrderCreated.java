@@ -1,9 +1,8 @@
 package com.samsung.event.dto;
 
+import java.util.List;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -11,12 +10,12 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataOrderCreated {
-     String orderId;
-     String userId;
-     String orderDate;
-     Long totalAmount;
-     String status;
-     String paymentType;
-     String address;
-     List<ItemDetail> listItemDetail;
+    String orderId;
+    String userId;
+    String orderDate;
+    Long totalAmount;
+    String status;
+    String paymentType;
+    String address;
+    List<ItemDetail> listItemDetail;
 }

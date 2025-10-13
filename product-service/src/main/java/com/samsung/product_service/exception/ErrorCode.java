@@ -22,7 +22,6 @@ public enum ErrorCode {
     ERROR_CALL_ORDER_DETAIL(1012, "error call order-detail", HttpStatus.NOT_FOUND),
     PRODUCT_NOT_EXISTED(1012, "product not existed", HttpStatus.NOT_FOUND),
     NAME_PRODUCT_EXISTED(1012, "name product existed", HttpStatus.NOT_FOUND),
-
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

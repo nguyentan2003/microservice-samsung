@@ -2,7 +2,6 @@ package com.samsung.product_service.service;
 
 import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.ItemDetail;
-import com.samsung.event.dto.OrderCreatedEvent;
 import com.samsung.event.dto.OrderItemProduct;
 import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.product_service.dto.request.ProductRequest;
@@ -14,10 +13,6 @@ import com.samsung.product_service.exception.ErrorCode;
 import com.samsung.product_service.mapper.ProductMapper;
 import com.samsung.product_service.repository.OrderDetailRepository;
 import com.samsung.product_service.repository.ProductRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,11 +20,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
 
     private final ProductRepository productRepository;
@@ -38,21 +42,23 @@ public class ProductService {
     private final OrderDetailService orderDetailService;
     private final OrderDetailRepository orderDetailRepository;
 
-    private static final String UPLOAD_DIR = "C:/java/Java Spring Boot/microservice-samsung/uploads/";
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+    // private static final String UPLOAD_DIR = "C:/java/Java Spring Boot/microservice-samsung/uploads/";
 
     public ProductResponse createProduct(ProductRequest request) throws IOException {
         // Tạo thư mục nếu chưa có
-        File uploadDir = new File(UPLOAD_DIR);
+        File uploadDir = new File(this.uploadDir);
         if (!uploadDir.exists()) uploadDir.mkdirs();
 
-        if(productRepository.existsByName(request.getName())){
+        if (productRepository.existsByName(request.getName())) {
             throw new AppException(ErrorCode.NAME_PRODUCT_EXISTED);
         }
 
         // Đặt tên file tránh trùng
         MultipartFile imageFile = request.getImage();
         String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-        Path filePath = Paths.get(UPLOAD_DIR + fileName);
+        Path filePath = Paths.get(this.uploadDir + fileName);
         Files.write(filePath, imageFile.getBytes());
 
         // Lưu DB
@@ -71,16 +77,16 @@ public class ProductService {
         return productMapper.toProductResponse(product);
     }
 
-    public ProductResponse updateProduct(String productId,ProductRequest request) throws IOException {
+    public ProductResponse updateProduct(String productId, ProductRequest request) throws IOException {
         // Lưu DB
-        Product product = productRepository.findById(productId).orElseThrow(()->{
+        Product product = productRepository.findById(productId).orElseThrow(() -> {
             throw new AppException(ErrorCode.PRODUCT_NOT_EXISTED);
         });
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             // Đặt tên file tránh trùng
             MultipartFile imageFile = request.getImage();
             String fileName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            Path filePath = Paths.get(this.uploadDir + fileName);
             Files.write(filePath, imageFile.getBytes());
 
             product.setImageUrl(fileName);
@@ -102,104 +108,114 @@ public class ProductService {
     }
 
     public ProductResponse getProductById(String id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
+        Product product =
+                productRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_EXISTED));
         return productMapper.toProductResponse(product);
     }
 
-
     @Transactional
-    public Boolean checkStock(DataOrderCreated orderCreatedEvent) {
+    public boolean checkStock(DataOrderCreated orderCreatedEvent) {
+
+        // Lấy tất cả productId trong đơn hàng
+        List<String> productIds = orderCreatedEvent.getListItemDetail()
+                .stream()
+                .map(ItemDetail::getProductId)
+                .toList();
+
+        // Lấy toàn bộ product một lần
+        List<Product> products = productRepository.findAllById(productIds);
+
+        // Chuyển về map để dễ truy xuất
+        Map<String, Product> productMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
+        // 1️⃣ Kiểm tra tồn kho
         for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
-            // tìm product theo id
-            Product product = productRepository.findById(item.getProductId())
-                    .orElse(null);
+            Product product = productMap.get(item.getProductId());
 
             if (product == null) {
-                return false; // sản phẩm không tồn tại
+                log.info ("Không tồn tại sản phẩm ID: " + item.getProductId());
+                return false;
             }
 
-            // tính tồn kho khả dụng
-            Long available = product.getStockQuantity() - product.getReservedStock();
-
+            long available = product.getStockQuantity() - product.getReservedStock();
             if (available < item.getQuantity()) {
-                return false; // không đủ hàng
+                log.info("Sản phẩm " + product.getName() + " không đủ hàng");
+                return false;
             }
         }
 
-        // Nếu tất cả sản phẩm đều đủ → tiến hành reserve
+        // 2️⃣ Nếu đủ hàng, cập nhật reservedStock + tạo OrderDetail
+        List<OrderDetail> orderDetails = new ArrayList<>();
+
         for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow();
-
+            Product product = productMap.get(item.getProductId());
             product.setReservedStock(product.getReservedStock() + item.getQuantity());
-            productRepository.save(product);
 
-            // tao cac orderDetail
-            OrderDetailCreationRequest orderDetailCreationRequest = OrderDetailCreationRequest.builder()
+            orderDetails.add(OrderDetail.builder()
                     .orderId(orderCreatedEvent.getOrderId())
                     .productId(product.getId())
                     .priceAtTime(item.getPriceAtTime())
                     .quantity(item.getQuantity())
-                    .build();
-            orderDetailService.createOrderDetail(orderDetailCreationRequest);
+                    .build());
         }
+
+        // 3️⃣ Lưu batch 1 lần duy nhất
+        productRepository.saveAll(products);
+        orderDetailRepository.saveAll(orderDetails);
 
         return true;
-    }
-    public List<OrderItemProduct> getStocks(DataOrderCreated orderCreatedEvent) {
-
-        List<OrderItemProduct> orderItemProductList = new ArrayList<>();
-        // Nếu tất cả sản phẩm đều đủ → tiến hành reserve
-        for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
-            Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow();
-
-            OrderItemProduct orderItemProduct = OrderItemProduct.builder()
-                    .quantity(item.getQuantity())
-                    .priceAtTime(item.getPriceAtTime())
-                    .productName(product.getName())
-                    .imageUrl(product.getImageUrl())
-                    .productId(product.getId())
-                    .build();
-            orderItemProductList.add(orderItemProduct);
-        }
-
-        return orderItemProductList;
     }
     @Transactional
-    public Boolean returnStockByOrderId(String orderId) {
-        // Lấy danh sách orderDetail theo orderId
+    public boolean returnStockByOrderId(String orderId) {
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(orderId);
+        if (orderDetails.isEmpty()) return false;
 
-        if (orderDetails.isEmpty()) {
-           // log.warn("Không tìm thấy OrderDetail cho orderId={}", orderId);
-            return false;
+        // Lấy tất cả productId
+        List<String> productIds = orderDetails.stream()
+                .map(OrderDetail::getProductId)
+                .toList();
+
+        List<Product> products = productRepository.findAllById(productIds);
+        Map<String, Product> productMap = products.stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
+        for (OrderDetail detail : orderDetails) {
+            Product product = productMap.get(detail.getProductId());
+            if (product == null) continue;
+
+            long reserved = product.getReservedStock() - detail.getQuantity();
+            product.setReservedStock(Math.max(reserved, 0));
         }
 
-        for (OrderDetail orderDetail : orderDetails) {
-            Product product = productRepository.findById(orderDetail.getProductId())
-                    .orElse(null);
-
-            if (product == null) {
-              //  log.warn("Không tìm thấy Product với id={}", orderDetail.getProductId());
-                return false;
-            }
-
-            // Kiểm tra tránh âm reservedStock
-            if (product.getReservedStock() < orderDetail.getQuantity()) {
-             //   log.warn("reservedStock của product {} nhỏ hơn số cần hoàn! reserved={}, cần hoàn={}",
-                    //    product.getId(), product.getReservedStock(), orderDetail.getQuantity());
-                return false;
-            }
-
-            // Hoàn trả số lượng
-            product.setReservedStock(product.getReservedStock() - orderDetail.getQuantity());
-            productRepository.save(product);
-        }
-
+        productRepository.saveAll(products);
         return true;
     }
+
+    public List<OrderItemProduct> getStocks(DataOrderCreated orderCreatedEvent) {
+        List<String> productIds = orderCreatedEvent.getListItemDetail()
+                .stream()
+                .map(ItemDetail::getProductId)
+                .toList();
+
+        Map<String, Product> productMap = productRepository.findAllById(productIds)
+                .stream()
+                .collect(Collectors.toMap(Product::getId, p -> p));
+
+        return orderCreatedEvent.getListItemDetail().stream()
+                .map(item -> {
+                    Product product = productMap.get(item.getProductId());
+                    return OrderItemProduct.builder()
+                            .productId(product.getId())
+                            .productName(product.getName())
+                            .imageUrl(product.getImageUrl())
+                            .priceAtTime(item.getPriceAtTime())
+                            .quantity(item.getQuantity())
+                            .build();
+                })
+                .toList();
+    }
+
 
     public List<OrderItemProduct> getDataOrderProduct(String orderId) {
         // Lấy danh sách orderDetail theo orderId
@@ -212,8 +228,8 @@ public class ProductService {
         }
 
         for (OrderDetail orderDetail : orderDetails) {
-            Product product = productRepository.findById(orderDetail.getProductId())
-                    .orElse(null);
+            Product product =
+                    productRepository.findById(orderDetail.getProductId()).orElse(null);
 
             if (product == null) {
                 //  log.warn("Không tìm thấy Product với id={}", orderDetail.getProductId());
@@ -227,12 +243,8 @@ public class ProductService {
                     .quantity(orderDetail.getQuantity())
                     .build();
             orderItemProducts.add(orderItemProduct);
-
         }
 
         return orderItemProducts;
     }
-
-
-
 }

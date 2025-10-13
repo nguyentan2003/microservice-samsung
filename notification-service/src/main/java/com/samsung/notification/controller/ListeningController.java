@@ -32,6 +32,18 @@ public class ListeningController {
         log.info("Notification Status : {}", notificationStatus);
     }
 
+    @KafkaListener(topics = Topic.UPDATE_ORDER_STATUS)
+    public void listeningOrderChangeStatus(UpdateOrderStatus orderStatus){
 
+        Notification notification = Notification.builder()
+                .userId(orderStatus.getUserId())
+                .type("INFO")
+                .message("Order : "+orderStatus.getOrderId()+" " +orderStatus.getStatus())
+                .sentAt(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationService.sendNotification(notification);
+        log.info("UPDATE_ORDER_STATUS Status : {}", orderStatus);
+    }
 }
 

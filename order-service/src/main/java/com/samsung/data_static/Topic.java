@@ -15,6 +15,7 @@ public class Topic {
     public static final String ORDER_CANCELED = "OrderCanceled3";
     public static final String RETURN_STOCK = "ReturnStock";
 
+    public static final String UPDATE_ORDER_STATUS = "UpdateOrderStatus";
     public static final String ORDER_TIME_OUT = "OrderTimeOut";
     public static final String NOTIFICATION_STATUS = "NotificationStatus";
 

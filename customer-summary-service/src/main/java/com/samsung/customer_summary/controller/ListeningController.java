@@ -247,4 +247,16 @@ public class ListeningController {
 
         log.info("Update order -> canceled cho orderId={}", dataOrder.getId());
     }
+
+    @KafkaListener(topics = Topic.UPDATE_ORDER_STATUS)
+    public void listeningOrderChangeStatusShipping(UpdateOrderStatus updateOrderStatus){
+        Query query = new Query(Criteria.where("orderId").is(updateOrderStatus.getOrderId()));
+        CustomerSummary summary = mongoTemplate.findOne(query, CustomerSummary.class);
+        Update update = new Update()
+                .set("orderStatus", updateOrderStatus.getStatus())
+                .set("updatedAt", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, CustomerSummary.class);
+
+        log.info("Update order -> {} cho orderId={}",updateOrderStatus.getStatus(), updateOrderStatus.getOrderId());
+    }
 }

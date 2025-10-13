@@ -3,9 +3,6 @@ package com.samsung.product_service.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,6 +15,6 @@ public class ProductResponse {
     String type;
     Long price;
     Long stockQuantity;
-    Long reservedStock ;
+    Long reservedStock;
     String imageUrl; // link ảnh hoặc tên file
 }

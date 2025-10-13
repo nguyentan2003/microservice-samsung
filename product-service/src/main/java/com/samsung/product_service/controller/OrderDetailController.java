@@ -4,15 +4,13 @@ import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.product_service.dto.response.ApiResponse;
 import com.samsung.product_service.dto.response.OrderDetailResponse;
 import com.samsung.product_service.service.OrderDetailService;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @RestController
 @RequestMapping("/order-detail")
@@ -37,6 +35,7 @@ public class OrderDetailController {
                 .result(orderDetailService.getOrderByOrderIdDetail(orderDetailId))
                 .build();
     }
+
     @PostMapping("/create")
     ApiResponse<OrderDetailResponse> create(@RequestBody OrderDetailCreationRequest request) {
 
@@ -44,5 +43,4 @@ public class OrderDetailController {
                 .result(orderDetailService.createOrderDetail(request))
                 .build();
     }
-
 }

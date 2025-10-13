@@ -79,6 +79,7 @@ public class ListeningController {
                 case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_RESERVED, null);
                 case OrderStatus.PAYMENT_SUCCESS ->updateAndSend(orderId, OrderStatus.SUCCESS, Topic.ORDER_SUCCESS);
                 case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.RETURN_STOCK);
+                case OrderStatus.CANCELED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.RETURN_STOCK);
             }
         } else {
             updateAndSend(orderId, OrderStatus.SUCCESS, Topic.ORDER_SUCCESS);
@@ -102,6 +103,7 @@ public class ListeningController {
                 case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_FAILED, null);
                 case OrderStatus.PAYMENT_SUCCESS -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.REFUND_MONEY);
                 case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.ORDER_CANCELED);
+                case OrderStatus.CANCELED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.ORDER_STOCK_FAILED);
             }
         } else {
             updateAndSend(orderId, OrderStatus.CANCELED, Topic.ORDER_CANCELED);
@@ -123,6 +125,7 @@ public class ListeningController {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_FAILED, null);
             case OrderStatus.STOCK_RESERVED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.RETURN_STOCK);
             case OrderStatus.STOCK_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.ORDER_CANCELED);
+            case OrderStatus.CANCELED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.PAYMENT_FAILED);
         }
     }
 

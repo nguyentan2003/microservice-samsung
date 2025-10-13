@@ -8,6 +8,8 @@ import com.samsung.order_service.dto.response.OrderResponse;
 import com.samsung.order_service.entity.Order;
 
 import com.samsung.data_static.OrderStatus;
+import com.samsung.order_service.exception.AppException;
+import com.samsung.order_service.exception.ErrorCode;
 import com.samsung.order_service.mapper.OrderMapper;
 import com.samsung.order_service.repository.OrderRepository;
 import lombok.AccessLevel;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -58,6 +61,47 @@ public class OrderService {
         return orderResponse;
     }
 
+    public Boolean cancelOrder(String orderId){
+        Order order = orderRepository.findById(orderId).orElseThrow(()->{
+            throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
+        });
+        String status = order.getStatus();
+        String type = order.getPaymentType();
+        if(status.equals(OrderStatus.CANCELED) || status.equals(OrderStatus.SHIPPING)){
+            throw new AppException(ErrorCode.STATUS_NOT_MATCH);
+        }
+        else  {
+
+            order.setStatus(OrderStatus.CANCELED);
+            orderRepository.save(order);
+            NotificationStatus notificationStatus1 = NotificationStatus.builder()
+                    .userId(order.getUserId())
+                    .orderId(orderId)
+                    .build();
+
+            if (status.equals(OrderStatus.STOCK_RESERVED)){
+                kafkaTemplateString.send(Topic.RETURN_STOCK,orderId,orderId);
+                notificationStatus1.setMessage(Topic.RETURN_STOCK);
+                kafkaTemplate.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus1);
+            }else if(status.equals(OrderStatus.PAYMENT_SUCCESS)){
+                kafkaTemplateString.send(Topic.REFUND_MONEY,orderId,orderId);
+                notificationStatus1.setMessage(Topic.REFUND_MONEY);
+                kafkaTemplate.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus1);
+            }
+            else if (status.equals(OrderStatus.SUCCESS)){
+                kafkaTemplateString.send(Topic.RETURN_STOCK,orderId,orderId);
+                notificationStatus1.setMessage(Topic.RETURN_STOCK);
+                kafkaTemplate.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus1);
+                if(type.equals("PREPAID")){
+                    kafkaTemplateString.send(Topic.REFUND_MONEY,orderId,orderId);
+                    notificationStatus1.setMessage(Topic.REFUND_MONEY);
+                    kafkaTemplate.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus1);
+                }
+            }
+        }
+        return true;
+    }
+
 //    scheduleOrderTimeout(order.getId());
     private void scheduleOrderTimeout(String orderId) {
         taskScheduler.schedule(() -> {
@@ -95,7 +139,23 @@ public class OrderService {
        if(order != null) {
            order.setStatus(status);
            orderRepository.save(order);
+
        }
+    }
+
+    public Order updateOrderStatusAdmin(String orderId,String status){
+        Order order = getOrderById(orderId);
+
+        if(order != null) {
+            if(status.equals(OrderStatus.CANCELED)){
+                cancelOrder(orderId);
+            }
+            order.setStatus(status);
+
+            return orderRepository.save(order);
+
+        }
+        else throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
     }
 
 

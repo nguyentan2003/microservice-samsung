@@ -10,6 +10,7 @@ public class OrderStatus {
     public static final String PAYMENT_FAILED = "PAYMENT_FAILED";
     public static final String REFUND_MONEY = "REFUND_MONEY";
     public static final String RETURN_STOCK = "RETURN_STOCK";
+    public static final String SHIPPING = "SHIPPING";
 
     // Ngăn không cho tạo instance class này
     private OrderStatus() {}

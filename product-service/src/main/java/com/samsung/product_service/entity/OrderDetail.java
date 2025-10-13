@@ -18,15 +18,15 @@ public class OrderDetail {
 
     @Column(name = "order_id")
     String orderId;
+
     @Column(name = "product_id")
     String productId;
 
     int quantity;
 
-    //gia tai thoi diem mua
+    // gia tai thoi diem mua
     @Column(name = "price_at_time")
     Long priceAtTime;
 
     String status;
-
 }

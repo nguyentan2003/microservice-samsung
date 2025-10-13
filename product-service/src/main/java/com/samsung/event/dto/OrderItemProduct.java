@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderItemProduct {
     String productId;
-    String productName;   // lưu snapshot tại thời điểm đặt
+    String productName; // lưu snapshot tại thời điểm đặt
     Long priceAtTime;
     int quantity;
     String imageUrl;

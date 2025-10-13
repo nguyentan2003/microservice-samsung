@@ -30,4 +30,6 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
 
-
+app:
+  upload:
+    dir: "C:/java/Java Spring Boot/microservice-samsung/uploads/"

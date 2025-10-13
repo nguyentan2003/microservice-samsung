@@ -9,6 +9,7 @@ public class OrderStatus {
     public static final String PAYMENT_SUCCESS = "PAYMENT_SUCCESS";
     public static final String PAYMENT_FAILED = "PAYMENT_FAILED";
 
+    public static final String SHIPPING = "SHIPPING";
     // Ngăn không cho tạo instance class này
     private OrderStatus() {}
 }

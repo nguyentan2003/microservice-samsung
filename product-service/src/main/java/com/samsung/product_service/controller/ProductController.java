@@ -1,18 +1,16 @@
 package com.samsung.product_service.controller;
 
-
 import com.samsung.product_service.dto.request.ProductRequest;
 import com.samsung.product_service.dto.response.ApiResponse;
 import com.samsung.product_service.dto.response.ProductResponse;
 import com.samsung.product_service.service.ProductService;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +26,8 @@ public class ProductController {
             @RequestParam("type") String type,
             @RequestParam("price") Long price,
             @RequestParam("stockQuantity") Long stockQuantity,
-            @RequestParam(value = "image", required = false) MultipartFile image
-    ) throws IOException {
+            @RequestParam(value = "image", required = false) MultipartFile image)
+            throws IOException {
 
         ProductRequest request = ProductRequest.builder()
                 .name(name)
@@ -45,7 +43,6 @@ public class ProductController {
                 .build();
     }
 
-
     @PutMapping(value = "/update-product/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<ProductResponse> updateProduct(
             @PathVariable String productId,
@@ -54,8 +51,8 @@ public class ProductController {
             @RequestParam("type") String type,
             @RequestParam("price") Long price,
             @RequestParam("stockQuantity") Long stockQuantity,
-            @RequestParam(value = "image", required = false) MultipartFile image
-    ) throws IOException {
+            @RequestParam(value = "image", required = false) MultipartFile image)
+            throws IOException {
 
         ProductRequest request = ProductRequest.builder()
                 .name(name)
@@ -71,13 +68,11 @@ public class ProductController {
                 .build();
     }
 
-
     @GetMapping("/list")
     public ApiResponse<List<ProductResponse>> getAllProducts() {
         return ApiResponse.<List<ProductResponse>>builder()
                 .result(productService.getAllProducts())
                 .build();
-
     }
 
     @GetMapping("/{id}")
@@ -85,8 +80,5 @@ public class ProductController {
         return ApiResponse.<ProductResponse>builder()
                 .result(productService.getProductById(id))
                 .build();
-
     }
-
-
 }

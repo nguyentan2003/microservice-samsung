@@ -1,29 +1,21 @@
 package com.samsung.notification.service;
 
-
-import com.samsung.notification.configuration.CustomJwtDecoder;
-import com.samsung.notification.entity.Notification;
-import com.samsung.notification.repository.NotificationRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import com.samsung.notification.entity.Notification;
+import com.samsung.notification.repository.NotificationRepository;
 
 @Service
 public class NotificationService {
@@ -34,6 +26,7 @@ public class NotificationService {
     public NotificationService(NotificationRepository repository) {
         this.repository = repository;
     }
+
     public void markAllAsRead(String userId) {
         List<Notification> list = repository.findByUserId(userId);
         for (Notification n : list) {
@@ -41,7 +34,6 @@ public class NotificationService {
         }
         repository.saveAll(list);
     }
-
 
     // Đăng ký kết nối SSE cho user
     public SseEmitter subscribe(String userId) {
@@ -69,17 +61,14 @@ public class NotificationService {
 
     // Gửi thông báo cho user
     public void sendNotification(Notification notification) {
-         // lưu DB
+        // lưu DB
 
         repository.save(notification);
         SseEmitter emitter = emitters.get(notification.getUserId());
 
-
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event()
-                        .name("notification")
-                        .data(notification));
+                emitter.send(SseEmitter.event().name("notification").data(notification));
             } catch (Exception e) {
                 emitters.remove(notification.getUserId());
             }
@@ -89,13 +78,13 @@ public class NotificationService {
     public Object getAll() {
         // lưu DB
 
-      return repository.findAll();
+        return repository.findAll();
     }
 
     public void deleteAll() {
         // lưu DB
 
-         repository.deleteAll();
+        repository.deleteAll();
     }
 
     public List<Notification> getListOfUser(String userId) {
@@ -104,6 +93,4 @@ public class NotificationService {
                 .sorted(Comparator.comparing(Notification::getSentAt).reversed()) // sắp xếp giảm dần theo thời gian
                 .collect(Collectors.toList());
     }
-
 }
-

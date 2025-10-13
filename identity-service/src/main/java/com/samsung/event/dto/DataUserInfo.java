@@ -1,10 +1,7 @@
 package com.samsung.event.dto;
 
-import com.samsung.identity.dto.response.RoleResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +16,4 @@ public class DataUserInfo {
     String email;
     String phone;
     String address;
-
 }

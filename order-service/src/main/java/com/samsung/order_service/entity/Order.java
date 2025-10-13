@@ -1,10 +1,9 @@
 package com.samsung.order_service.entity;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -30,10 +29,9 @@ public class Order {
     @Column(name = "total_amount")
     Long totalAmount;
 
-//    PREPAID, POSTPAID
+    //    PREPAID, POSTPAID
     @Column(name = "payment_type")
     String paymentType;
 
     String address;
-
 }

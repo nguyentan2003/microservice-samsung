@@ -1,14 +1,11 @@
 package com.samsung.identity.exception;
 
-import org.springframework.http.HttpStatusCode;
-
 public class AppException extends RuntimeException {
 
     public AppException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
-
 
     private ErrorCode errorCode;
 

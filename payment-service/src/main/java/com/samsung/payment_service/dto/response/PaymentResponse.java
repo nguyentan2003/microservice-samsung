@@ -3,7 +3,6 @@ package com.samsung.payment_service.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-
 @Data
 @Builder
 @NoArgsConstructor

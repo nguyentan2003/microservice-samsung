@@ -16,5 +16,4 @@ public class DataUserInfo {
     String email;
     String phone;
     String address;
-
 }

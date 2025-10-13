@@ -1,12 +1,13 @@
 package com.samsung.customer_summary.entity;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Document(collection = "customer-summary")
 @Data
@@ -47,4 +48,3 @@ public class CustomerSummary {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
-

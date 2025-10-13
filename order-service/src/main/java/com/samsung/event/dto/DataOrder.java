@@ -1,6 +1,7 @@
 package com.samsung.event.dto;
 
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,5 +25,4 @@ public class DataOrder {
     String paymentType;
 
     String address;
-
 }

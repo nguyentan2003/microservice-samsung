@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatusCode;
 import lombok.Getter;
 
 @Getter
-
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),

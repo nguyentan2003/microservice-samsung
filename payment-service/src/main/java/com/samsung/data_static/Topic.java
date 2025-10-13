@@ -15,8 +15,6 @@ public class Topic {
     public static final String ORDER_CANCELED = "OrderCanceled3";
     public static final String RETURN_STOCK = "ReturnStock";
 
-
-
     // Ngăn không cho tạo instance class này
     private Topic() {}
 }

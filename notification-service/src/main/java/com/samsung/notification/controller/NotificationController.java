@@ -1,6 +1,10 @@
 package com.samsung.notification.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.samsung.notification.dto.ApiResponse;
 import com.samsung.notification.entity.Notification;
@@ -8,18 +12,12 @@ import com.samsung.notification.service.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
-
 
     @GetMapping("/stream/{userId}")
     public SseEmitter stream(@PathVariable String userId) {
@@ -42,6 +40,7 @@ public class NotificationController {
         notificationService.sendNotification(notification);
         return "thành công";
     }
+
     @GetMapping("/getAll")
     public Object getAll() {
 
@@ -68,4 +67,3 @@ public class NotificationController {
                 .build();
     }
 }
-

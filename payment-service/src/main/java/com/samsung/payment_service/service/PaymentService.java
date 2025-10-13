@@ -6,17 +6,15 @@ import com.samsung.event.dto.DataPayment;
 import com.samsung.payment_service.dto.request.PaymentRequest;
 import com.samsung.payment_service.dto.response.PaymentResponse;
 import com.samsung.payment_service.entity.Payment;
-import com.samsung.payment_service.exception.AppException;
-import com.samsung.payment_service.exception.ErrorCode;
 import com.samsung.payment_service.mapper.PaymentMapper;
 import com.samsung.payment_service.repository.PaymentRepository;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,28 +27,27 @@ public class PaymentService {
     KafkaTemplate<String, String> kafkaTemplate;
     KafkaTemplate<String, Object> objectKafkaTemplate;
 
-    public PaymentResponse createPayment(PaymentRequest paymentRequest){
+    public PaymentResponse createPayment(PaymentRequest paymentRequest) {
         Payment payment = paymentMapper.toPayment(paymentRequest);
-        if(OrderStatus.SUCCESS.equals(paymentRequest.getStatus())){
+        if (OrderStatus.SUCCESS.equals(paymentRequest.getStatus())) {
             DataPayment dataPayment = paymentMapper.toDataPayment(payment);
-            kafkaTemplate.send(Topic.PAYMENT_SUCCESS,paymentRequest.getOrderId(),paymentRequest.getOrderId());
-            objectKafkaTemplate.send(Topic.DATA_PAYMENT_SUCCESS,paymentRequest.getOrderId(),dataPayment);
+            kafkaTemplate.send(Topic.PAYMENT_SUCCESS, paymentRequest.getOrderId(), paymentRequest.getOrderId());
+            objectKafkaTemplate.send(Topic.DATA_PAYMENT_SUCCESS, paymentRequest.getOrderId(), dataPayment);
 
             return paymentMapper.toPaymentResponse(paymentRepository.save(payment));
-        }
-        else{
-            kafkaTemplate.send(Topic.PAYMENT_FAILED,paymentRequest.getOrderId(),paymentRequest.getOrderId());
+        } else {
+            kafkaTemplate.send(Topic.PAYMENT_FAILED, paymentRequest.getOrderId(), paymentRequest.getOrderId());
             return paymentMapper.toPaymentResponse(payment);
         }
     }
 
-    public List<PaymentResponse> getListPayment(){
+    public List<PaymentResponse> getListPayment() {
         return paymentMapper.toPaymentResponses(paymentRepository.findAll());
     }
 
-    public Payment getPaymentByOrderId(String orderId){
-        return paymentRepository.findByOrderId(orderId).orElseThrow(()->{
-            throw  new RuntimeException();
+    public Payment getPaymentByOrderId(String orderId) {
+        return paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
+            throw new RuntimeException();
         });
     }
 }

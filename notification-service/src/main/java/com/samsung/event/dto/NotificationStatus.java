@@ -13,5 +13,4 @@ public class NotificationStatus {
     String orderId;
     String userId;
     String message;
-
 }

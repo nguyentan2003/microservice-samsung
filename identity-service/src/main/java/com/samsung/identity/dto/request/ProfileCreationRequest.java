@@ -1,7 +1,5 @@
 package com.samsung.identity.dto.request;
 
-import java.time.LocalDate;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

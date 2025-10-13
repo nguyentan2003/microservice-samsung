@@ -1,20 +1,22 @@
 package com.samsung.order_service.controller;
 
-import com.samsung.data_static.Topic;
-import com.samsung.event.dto.NotificationStatus;
-import com.samsung.order_service.entity.Order;
-import com.samsung.data_static.OrderStatus;
-import com.samsung.order_service.exception.PaymentType;
-import com.samsung.order_service.mapper.OrderMapper;
-import com.samsung.order_service.service.OrderService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.samsung.data_static.OrderStatus;
+import com.samsung.data_static.Topic;
+import com.samsung.event.dto.NotificationStatus;
+import com.samsung.order_service.entity.Order;
+import com.samsung.order_service.exception.PaymentType;
+import com.samsung.order_service.mapper.OrderMapper;
+import com.samsung.order_service.service.OrderService;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class ListeningController {
 
     @Autowired
     OrderService orderService;
+
     @Autowired
     OrderMapper orderMapper;
 
@@ -41,24 +44,23 @@ public class ListeningController {
                     .message(topic)
                     .build();
 
-            if(topic.equals(Topic.ORDER_SUCCESS) || topic.equals(Topic.ORDER_CANCELED)) {
+            if (topic.equals(Topic.ORDER_SUCCESS) || topic.equals(Topic.ORDER_CANCELED)) {
 
                 kafkaObject.send(topic, orderId, orderMapper.toDataOrder(order));
-            }
-            else {
-                if(newStatus.equals(OrderStatus.CANCELED)){
+            } else {
+                if (newStatus.equals(OrderStatus.CANCELED)) {
                     kafkaObject.send(Topic.ORDER_CANCELED, orderId, orderMapper.toDataOrder(order));
                     NotificationStatus notificationStatus1 = NotificationStatus.builder()
                             .userId(order.getUserId())
                             .orderId(orderId)
                             .message(Topic.ORDER_CANCELED)
                             .build();
-                    kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus1);
+                    kafkaObject.send(Topic.NOTIFICATION_STATUS, orderId, notificationStatus1);
                 }
                 kafkaTemplate.send(topic, orderId, orderId);
             }
 
-            kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
+            kafkaObject.send(Topic.NOTIFICATION_STATUS, orderId, notificationStatus);
         }
     }
 
@@ -72,12 +74,12 @@ public class ListeningController {
                 .userId(order.getUserId())
                 .orderId(orderId)
                 .build();
-        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
+        kafkaObject.send(Topic.NOTIFICATION_STATUS, orderId, notificationStatus);
 
         if (PaymentType.PREPAID.equals(order.getPaymentType())) {
             switch (order.getStatus()) {
                 case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.STOCK_RESERVED, null);
-                case OrderStatus.PAYMENT_SUCCESS ->updateAndSend(orderId, OrderStatus.SUCCESS, Topic.ORDER_SUCCESS);
+                case OrderStatus.PAYMENT_SUCCESS -> updateAndSend(orderId, OrderStatus.SUCCESS, Topic.ORDER_SUCCESS);
                 case OrderStatus.PAYMENT_FAILED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.RETURN_STOCK);
                 case OrderStatus.CANCELED -> updateAndSend(orderId, OrderStatus.CANCELED, Topic.RETURN_STOCK);
             }
@@ -96,7 +98,7 @@ public class ListeningController {
                 .userId(order.getUserId())
                 .orderId(orderId)
                 .build();
-        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
+        kafkaObject.send(Topic.NOTIFICATION_STATUS, orderId, notificationStatus);
 
         if (PaymentType.PREPAID.equals(order.getPaymentType())) {
             switch (order.getStatus()) {
@@ -119,7 +121,7 @@ public class ListeningController {
                 .userId(order.getUserId())
                 .orderId(orderId)
                 .build();
-        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
+        kafkaObject.send(Topic.NOTIFICATION_STATUS, orderId, notificationStatus);
 
         switch (order.getStatus()) {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_FAILED, null);
@@ -138,7 +140,7 @@ public class ListeningController {
                 .userId(order.getUserId())
                 .orderId(orderId)
                 .build();
-        kafkaObject.send(Topic.NOTIFICATION_STATUS,orderId,notificationStatus);
+        kafkaObject.send(Topic.NOTIFICATION_STATUS, orderId, notificationStatus);
 
         switch (order.getStatus()) {
             case OrderStatus.PENDING -> updateAndSend(orderId, OrderStatus.PAYMENT_SUCCESS, null);

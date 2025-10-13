@@ -1,12 +1,14 @@
 package com.samsung.customer_summary.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.samsung.customer_summary.dto.ApiResponse;
 import com.samsung.customer_summary.entity.CustomerSummary;
 import com.samsung.customer_summary.service.CustomerSummaryService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,8 +38,9 @@ public class CustomerSummaryController {
                 .result(service.getListSummaryByUserId(userId))
                 .build();
     }
+
     @DeleteMapping("/deleteAll")
-    public void deleteAll(){
+    public void deleteAll() {
         service.deleteAll();
     }
 }

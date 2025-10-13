@@ -1,9 +1,9 @@
 package com.samsung.event.dto;
 
+import java.util.List;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

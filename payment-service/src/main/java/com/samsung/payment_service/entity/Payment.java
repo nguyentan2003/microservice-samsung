@@ -16,10 +16,13 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+
     @Column(name = "order_id")
     String orderId;
+
     @Column(name = "payment_method")
     String paymentMethod;
+
     Long amount;
     String status;
 
@@ -28,5 +31,4 @@ public class Payment {
 
     @Column(name = "payment_time")
     String paymentTime;
-
 }

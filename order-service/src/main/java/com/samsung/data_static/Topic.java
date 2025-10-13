@@ -19,8 +19,6 @@ public class Topic {
     public static final String ORDER_TIME_OUT = "OrderTimeOut";
     public static final String NOTIFICATION_STATUS = "NotificationStatus";
 
-
-
     // Ngăn không cho tạo instance class này
     private Topic() {}
 }

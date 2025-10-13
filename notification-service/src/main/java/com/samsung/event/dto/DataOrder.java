@@ -22,5 +22,4 @@ public class DataOrder {
 
     String paymentType;
     String address;
-
 }

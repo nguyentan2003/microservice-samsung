@@ -3,7 +3,6 @@ package com.samsung.product_service.service;
 import com.samsung.event.dto.DataOrderCreated;
 import com.samsung.event.dto.ItemDetail;
 import com.samsung.event.dto.OrderItemProduct;
-import com.samsung.product_service.dto.request.OrderDetailCreationRequest;
 import com.samsung.product_service.dto.request.ProductRequest;
 import com.samsung.product_service.dto.response.ProductResponse;
 import com.samsung.product_service.entity.OrderDetail;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,8 +115,7 @@ public class ProductService {
     public boolean checkStock(DataOrderCreated orderCreatedEvent) {
 
         // Lấy tất cả productId trong đơn hàng
-        List<String> productIds = orderCreatedEvent.getListItemDetail()
-                .stream()
+        List<String> productIds = orderCreatedEvent.getListItemDetail().stream()
                 .map(ItemDetail::getProductId)
                 .toList();
 
@@ -126,15 +123,14 @@ public class ProductService {
         List<Product> products = productRepository.findAllById(productIds);
 
         // Chuyển về map để dễ truy xuất
-        Map<String, Product> productMap = products.stream()
-                .collect(Collectors.toMap(Product::getId, p -> p));
+        Map<String, Product> productMap = products.stream().collect(Collectors.toMap(Product::getId, p -> p));
 
         // 1️⃣ Kiểm tra tồn kho
         for (ItemDetail item : orderCreatedEvent.getListItemDetail()) {
             Product product = productMap.get(item.getProductId());
 
             if (product == null) {
-                log.info ("Không tồn tại sản phẩm ID: " + item.getProductId());
+                log.info("Không tồn tại sản phẩm ID: " + item.getProductId());
                 return false;
             }
 
@@ -166,19 +162,18 @@ public class ProductService {
 
         return true;
     }
+
     @Transactional
     public boolean returnStockByOrderId(String orderId) {
         List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(orderId);
         if (orderDetails.isEmpty()) return false;
 
         // Lấy tất cả productId
-        List<String> productIds = orderDetails.stream()
-                .map(OrderDetail::getProductId)
-                .toList();
+        List<String> productIds =
+                orderDetails.stream().map(OrderDetail::getProductId).toList();
 
         List<Product> products = productRepository.findAllById(productIds);
-        Map<String, Product> productMap = products.stream()
-                .collect(Collectors.toMap(Product::getId, p -> p));
+        Map<String, Product> productMap = products.stream().collect(Collectors.toMap(Product::getId, p -> p));
 
         for (OrderDetail detail : orderDetails) {
             Product product = productMap.get(detail.getProductId());
@@ -193,14 +188,12 @@ public class ProductService {
     }
 
     public List<OrderItemProduct> getStocks(DataOrderCreated orderCreatedEvent) {
-        List<String> productIds = orderCreatedEvent.getListItemDetail()
-                .stream()
+        List<String> productIds = orderCreatedEvent.getListItemDetail().stream()
                 .map(ItemDetail::getProductId)
                 .toList();
 
-        Map<String, Product> productMap = productRepository.findAllById(productIds)
-                .stream()
-                .collect(Collectors.toMap(Product::getId, p -> p));
+        Map<String, Product> productMap =
+                productRepository.findAllById(productIds).stream().collect(Collectors.toMap(Product::getId, p -> p));
 
         return orderCreatedEvent.getListItemDetail().stream()
                 .map(item -> {
@@ -215,7 +208,6 @@ public class ProductService {
                 })
                 .toList();
     }
-
 
     public List<OrderItemProduct> getDataOrderProduct(String orderId) {
         // Lấy danh sách orderDetail theo orderId

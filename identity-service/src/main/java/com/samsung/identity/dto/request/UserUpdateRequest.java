@@ -1,12 +1,10 @@
 package com.samsung.identity.dto.request;
 
-import java.time.LocalDate;
 import java.util.List;
-
-import com.samsung.identity.validator.DobConstraint;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
     String password;
+
     @Email(message = "INVALID_EMAIL")
     @NotBlank(message = "EMAIL_IS_REQUIRED")
     String email;

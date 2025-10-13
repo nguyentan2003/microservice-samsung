@@ -13,5 +13,4 @@ public class DataPushOrderSuccess {
     String orderId;
     String userId;
     String paymentType;
-
 }

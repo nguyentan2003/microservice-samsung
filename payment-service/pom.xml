@@ -167,10 +167,6 @@
 							<spacesPerTab>4</spacesPerTab>
 						</indent>
 						<palantirJavaFormat/>
-						<importPayment>
-							<!-- Specify either payment or file, but not both -->
-							<Payment>java,jakarta,org,com,com.diffplug,</Payment>
-						</importPayment>
 					</java>
 				</configuration>
 				<executions>

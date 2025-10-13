@@ -1,9 +1,6 @@
 package com.samsung.payment_service.controller;
 
 import com.samsung.data_static.Topic;
-import com.samsung.event.dto.DataPayment;
-import com.samsung.event.dto.DataPushOrderSuccess;
-import com.samsung.payment_service.entity.Payment;
 import com.samsung.payment_service.mapper.PaymentMapper;
 import com.samsung.payment_service.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -20,29 +17,26 @@ public class ListeningController {
     private final PaymentService paymentService;
     private final PaymentMapper paymentMapper;
 
-
     @KafkaListener(topics = Topic.REFUND_MONEY)
-    public void RefundMoney(String orderId){
-        log.info("hoàn tiền thành công cho order : {}",orderId);
-
+    public void RefundMoney(String orderId) {
+        log.info("hoàn tiền thành công cho order : {}", orderId);
     }
 
     private final KafkaTemplate<String, Object> kafkaObject;
 
-//    @KafkaListener(topics = "PushDataOrderSuccess3")
-//    public void PushDataOrderSuccess(DataPushOrderSuccess dataPushOrderSuccess){
-//
-//        if(dataPushOrderSuccess.getPaymentType().equals("PREPAID")){
-//            Payment payment = paymentService.getPaymentByOrderId(dataPushOrderSuccess.getOrderId());
-//            DataPayment dataPayment = paymentMapper.toDataPayment(payment);
-//            kafkaObject.send("OrderSuccessPayment3",dataPushOrderSuccess.getOrderId(),dataPayment);
-//            log.info("gui data payment for customer summary success {}",dataPayment);
-//        }else{
-//            log.info("{} order nay POSTPAID nen khong gui data",dataPushOrderSuccess.getOrderId());
-//        }
-//
-//
-//    }
+    //    @KafkaListener(topics = "PushDataOrderSuccess3")
+    //    public void PushDataOrderSuccess(DataPushOrderSuccess dataPushOrderSuccess){
+    //
+    //        if(dataPushOrderSuccess.getPaymentType().equals("PREPAID")){
+    //            Payment payment = paymentService.getPaymentByOrderId(dataPushOrderSuccess.getOrderId());
+    //            DataPayment dataPayment = paymentMapper.toDataPayment(payment);
+    //            kafkaObject.send("OrderSuccessPayment3",dataPushOrderSuccess.getOrderId(),dataPayment);
+    //            log.info("gui data payment for customer summary success {}",dataPayment);
+    //        }else{
+    //            log.info("{} order nay POSTPAID nen khong gui data",dataPushOrderSuccess.getOrderId());
+    //        }
+    //
+    //
+    //    }
 
 }
-

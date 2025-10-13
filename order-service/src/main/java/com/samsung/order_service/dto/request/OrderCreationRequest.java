@@ -1,10 +1,11 @@
 package com.samsung.order_service.dto.request;
 
+import java.util.List;
+
 import com.samsung.event.dto.ItemDetail;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,5 +19,5 @@ public class OrderCreationRequest {
     Long totalAmount;
     String paymentType;
     String address;
-    List<ItemDetail> listItemDetail ;
+    List<ItemDetail> listItemDetail;
 }

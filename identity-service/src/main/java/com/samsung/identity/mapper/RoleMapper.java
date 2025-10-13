@@ -1,13 +1,13 @@
 package com.samsung.identity.mapper;
 
+import java.util.Set;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import com.samsung.identity.dto.request.RoleRequest;
 import com.samsung.identity.dto.response.RoleResponse;
 import com.samsung.identity.entity.Role;
-
-import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {

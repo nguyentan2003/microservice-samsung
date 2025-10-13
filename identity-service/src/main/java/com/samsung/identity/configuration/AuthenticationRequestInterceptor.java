@@ -1,14 +1,15 @@
 package com.samsung.identity.configuration;
 
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import jakarta.servlet.http.HttpServletRequest;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AuthenticationRequestInterceptor implements RequestInterceptor {

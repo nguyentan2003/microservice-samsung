@@ -1,12 +1,8 @@
 package com.samsung.identity.dto.request;
 
-import java.time.LocalDate;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
-import com.samsung.identity.validator.DobConstraint;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

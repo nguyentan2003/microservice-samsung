@@ -1,12 +1,14 @@
 package com.samsung.customer_summary.service;
 
-import com.samsung.customer_summary.entity.PendingMessage;
-import com.samsung.customer_summary.repository.PendingMessageRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import com.samsung.customer_summary.entity.PendingMessage;
+import com.samsung.customer_summary.repository.PendingMessageRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j

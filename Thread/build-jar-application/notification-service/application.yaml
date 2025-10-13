@@ -1,0 +1,26 @@
+server:
+  port: 8007
+  servlet:
+    context-path: /notifications
+spring:
+  application:
+    name: notification-service
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+  data:
+    data:
+      mongodb:
+        host: localhost
+        port: 27017
+        username: root
+        password: root
+        database: topic9_notification_service
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"

@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nimbusds.jose.JOSEException;
 import com.samsung.identity.dto.request.*;
 import com.samsung.identity.dto.response.AuthenticationResponse;
 import com.samsung.identity.dto.response.IntrospectResponse;
 import com.samsung.identity.service.AuthenticationService;
-import com.nimbusds.jose.JOSEException;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

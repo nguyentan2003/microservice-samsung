@@ -42,9 +42,17 @@ public class OrderController {
 
     @PatchMapping("/cancel-order/{orderId}")
     public ApiResponse<Boolean> cancelOrder(@PathVariable String orderId) {
-        return ApiResponse.<Boolean>builder()
-                .result(orderService.cancelOrder(orderId))
-                .build();
+        Order order = orderService.cancelOrder(orderId);
+
+        kafkaTemplate.send(
+                Topic.UPDATE_ORDER_STATUS,
+                orderId,
+                UpdateOrderStatus.builder()
+                        .userId(order.getUserId())
+                        .orderId(order.getId())
+                        .status(OrderStatus.CANCELED)
+                        .build());
+        return ApiResponse.<Boolean>builder().result(true).build();
     }
 
     @PatchMapping("/update-status/{orderId}")

@@ -1,8 +1,9 @@
 server:
-    port: 8889
+    port: 8888
 
 app:
     api-prefix: /api/v1
+    identity-service-url: http://identity-service:8000/identity
 
 #
 spring:
@@ -12,51 +13,45 @@ spring:
         gateway:
             routes:
                 - id: identity_service
-                  uri: http://localhost:8000
+                  uri: http://identity-service:8000
                   predicates:
-                      - Path=${app.api-prefix}/identity/**
+                      - Path=/api/v1/identity/**
                   filters:
                       - StripPrefix=2
                 - id: profile_service
-                  uri: http://localhost:8001
+                  uri: http://profile-service:8100
                   predicates:
-                      - Path=${app.api-prefix}/profile/user-profile/**
+                      - Path=/api/v1/profile/user-profile/**
                   filters:
                       - StripPrefix=2
                 - id: notification_service
-                  uri: http://localhost:8007
+                  uri: http://notification-service:8700
                   predicates:
-                      - Path=${app.api-prefix}/notifications/**
+                      - Path=/api/v1/notifications/**
                   filters:
                       - StripPrefix=2
                 - id: order_service
-                  uri: http://localhost:8003
+                  uri: http://order-service:8300
                   predicates:
-                      - Path=${app.api-prefix}/order/**
+                      - Path=/api/v1/order/**
                   filters:
                       - StripPrefix=2
                 - id: product_service
-                  uri: http://localhost:8002
+                  uri: http://product-service:8200
                   predicates:
-                      - Path=${app.api-prefix}/product/**
+                      - Path=/api/v1/product/**
                   filters:
                       - StripPrefix=2
                 - id: payment_service
-                  uri: http://localhost:8005
+                  uri: http://payment-service:8500
                   predicates:
-                      - Path=${app.api-prefix}/payment/**
-                  filters:
-                      - StripPrefix=2
-                - id: shipping_service
-                  uri: http://localhost:8006
-                  predicates:
-                      - Path=${app.api-prefix}/shipping/**
+                      - Path=/api/v1/payment/**
                   filters:
                       - StripPrefix=2
 
                 - id: customer_summary_service
-                  uri: http://localhost:8008
+                  uri: http://customer-summary-service:8800
                   predicates:
-                      - Path=${app.api-prefix}/customer-summary/**
+                      - Path=/api/v1/customer-summary/**
                   filters:
                       - StripPrefix=2

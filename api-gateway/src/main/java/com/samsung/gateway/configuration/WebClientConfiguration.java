@@ -1,6 +1,7 @@
 package com.samsung.gateway.configuration;
 
 import com.samsung.gateway.repository.IdentityClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -14,13 +15,15 @@ import java.util.List;
 
 @Configuration
 public class WebClientConfiguration {
+    @Value("${app.identity-service-url}")
+    private String identityServiceUrl;
+
     @Bean
-    WebClient webClient(){
+    WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("http://localhost:8000/identity")
+                .baseUrl(identityServiceUrl)
                 .build();
     }
-
     @Bean
     CorsWebFilter corsWebFilter(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();

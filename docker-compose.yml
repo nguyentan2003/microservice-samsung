@@ -15,24 +15,6 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    volumes: []   # 👈 thêm dòng này để chắc chắn không có volume nào gắn
-#  mongodb:
-#    image: mongo:8.0.1-noble
-#    container_name: mongodb
-#    hostname: mongodb
-#    restart: always
-#    ports:
-#      - '27017:27017'
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: root
-#  mysql:
-#    image: mysql:8.0.40-debian
-#    container_name: mysql
-#    hostname: mysql
-#    restart: always
-#    ports:
-#      - '3306:3306'
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root
+    volumes: []   
+
 

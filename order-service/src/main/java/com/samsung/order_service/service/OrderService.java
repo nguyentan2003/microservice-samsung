@@ -62,7 +62,7 @@ public class OrderService {
         return orderResponse;
     }
 
-    public Boolean cancelOrder(String orderId) {
+    public Order cancelOrder(String orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> {
             throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
         });
@@ -98,7 +98,7 @@ public class OrderService {
                 }
             }
         }
-        return true;
+        return order;
     }
 
     //    scheduleOrderTimeout(order.getId());
@@ -150,7 +150,7 @@ public class OrderService {
 
         if (order != null) {
             if (status.equals(OrderStatus.CANCELED)) {
-                cancelOrder(orderId);
+                Order order1 = cancelOrder(orderId);
             }
             order.setStatus(status);
 

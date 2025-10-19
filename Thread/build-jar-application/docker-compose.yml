@@ -98,14 +98,16 @@ services:
     build:
       context: ./product-service
       dockerfile: Dockerfile
-    container_name: product-service
+    # container_name: product-service
     depends_on:
       - mysql
+    volumes:
+      - product-uploads:/app/uploads 
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_OPTS=-Dserver.port=8200
-    ports:
-      - "8200:8200"
+    # ports:
+    #   - "8200-8201:8200"
     networks:
       - micro-net
 
@@ -171,6 +173,7 @@ services:
 volumes:
   mysql-data:
   mongo-data:
+  product-uploads:
 
 networks:
   micro-net:

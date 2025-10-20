@@ -1,10 +1,8 @@
 package com.samsung.notification.service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,9 +86,6 @@ public class NotificationService {
     }
 
     public List<Notification> getListOfUser(String userId) {
-        return repository.findAll().stream()
-                .filter(item -> item.getUserId().equals(userId))
-                .sorted(Comparator.comparing(Notification::getSentAt).reversed()) // sắp xếp giảm dần theo thời gian
-                .collect(Collectors.toList());
+        return repository.findTop50ByUserIdOrderBySentAtDesc(userId);
     }
 }

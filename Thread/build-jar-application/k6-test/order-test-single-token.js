@@ -1,4 +1,4 @@
-// k6 run order-test-single-token.js
+// k6 run k6-test/order-test-single-token.js
 
 import http from "k6/http";
 import { check, sleep } from "k6";
@@ -21,8 +21,8 @@ export function setup() {
 }
 // 🧩 Cấu hình test
 export const options = {
-    vus: 10, // 10 user ảo chạy song song
-    iterations: 100, // Tổng cộng 100 request
+    vus: 100, // 10 user ảo chạy song song
+    iterations: 1000, // Tổng cộng 100 request
     // Hoặc có thể dùng duration:
     // duration: '30s', // chạy trong 30 giây
 };

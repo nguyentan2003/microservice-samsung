@@ -94,6 +94,8 @@ services:
       - micro-net
 
   # PRODUCT - 2 instances demo
+  # docker compose up --scale product-service=2 -d
+
   product-service:
     build:
       context: ./product-service
@@ -111,20 +113,20 @@ services:
     networks:
       - micro-net
 
- 
-
+#  docker compose up --scale customer-summary-service=2 --scale order-service=2 -d
+  # docker compose up --scale order-service=2 -d
   order-service:
     build:
       context: ./order-service
       dockerfile: Dockerfile
-    container_name: order-service
+    # container_name: order-service
     depends_on:
       - mysql
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_OPTS=-Dserver.port=8300
-    ports:
-      - "8300:8300"
+    # ports:
+    #   - "8300:8300"
     networks:
       - micro-net
 
@@ -157,16 +159,17 @@ services:
     networks:
       - micro-net
 
+  # docker compose up --scale customer-summary-service=2 -d
   customer-summary-service:
     build:
       context: ./customer-summary-service
       dockerfile: Dockerfile
-    container_name: customer-summary-service
+    # container_name: customer-summary-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - JAVA_OPTS=-Dserver.port=8800
-    ports:
-      - "8800:8800"
+    # ports:
+    #   - "8800:8800"
     networks:
       - micro-net
 

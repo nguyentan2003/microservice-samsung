@@ -1,8 +1,6 @@
 package com.samsung.customer_summary.service;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -20,7 +18,7 @@ public class CustomerSummaryService {
     private final CustomerSummaryRepository repository;
 
     public List<CustomerSummary> getAllSummaries() {
-        return repository.findAll();
+        return repository.findTop100ByOrderByCreatedAtDesc();
     }
 
     public CustomerSummary getSummaryByOrderId(String orderId) {
@@ -30,11 +28,7 @@ public class CustomerSummaryService {
     }
 
     public List<CustomerSummary> getListSummaryByUserId(String userId) {
-        return repository.findAll().stream()
-                .filter(item -> item.getUserId().equals(userId))
-                .sorted(Comparator.comparing(CustomerSummary::getOrderDate)
-                        .reversed()) // sắp xếp giảm dần theo thời gian
-                .collect(Collectors.toList());
+        return repository.findTop100ByUserIdOrderByCreatedAtDesc(userId);
     }
 
     public void deleteAll() {

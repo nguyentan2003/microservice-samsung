@@ -10,4 +10,6 @@ import com.samsung.notification.entity.Notification;
 @Repository
 public interface NotificationRepository extends MongoRepository<Notification, String> {
     List<Notification> findByUserId(String userId);
+
+    List<Notification> findTop50ByUserIdOrderBySentAtDesc(String userId);
 }

@@ -6,6 +6,8 @@ import com.samsung.event.dto.DataPayment;
 import com.samsung.payment_service.dto.request.PaymentRequest;
 import com.samsung.payment_service.dto.response.PaymentResponse;
 import com.samsung.payment_service.entity.Payment;
+import com.samsung.payment_service.exception.AppException;
+import com.samsung.payment_service.exception.ErrorCode;
 import com.samsung.payment_service.mapper.PaymentMapper;
 import com.samsung.payment_service.repository.PaymentRepository;
 import java.util.List;
@@ -45,9 +47,19 @@ public class PaymentService {
         return paymentMapper.toPaymentResponses(paymentRepository.findAll());
     }
 
+    public Boolean refundMoney(String orderId) {
+        Payment payment = paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
+            throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
+        });
+        payment.setStatus("REFUND_MONEY_SUCCESS");
+        paymentRepository.save(payment);
+
+        return true;
+    }
+
     public Payment getPaymentByOrderId(String orderId) {
         return paymentRepository.findByOrderId(orderId).orElseThrow(() -> {
-            throw new RuntimeException();
+            throw new AppException(ErrorCode.ORDER_NOT_EXISTED);
         });
     }
 }

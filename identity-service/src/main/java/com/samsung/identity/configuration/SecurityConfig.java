@@ -32,6 +32,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
                 .permitAll()
+                // Cho phép GET riêng /healthy-check
+                .requestMatchers(HttpMethod.GET, "/auth/healthy-check")
+                .permitAll()
                 .anyRequest()
                 .authenticated());
 

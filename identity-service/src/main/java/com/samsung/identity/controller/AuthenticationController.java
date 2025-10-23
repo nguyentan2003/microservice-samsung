@@ -2,10 +2,7 @@ package com.samsung.identity.controller;
 
 import java.text.ParseException;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.nimbusds.jose.JOSEException;
 import com.samsung.identity.dto.request.*;
@@ -28,6 +25,16 @@ public class AuthenticationController {
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+    }
+
+    @GetMapping("/healthy-check")
+    ApiResponse<Boolean> healthyCheck() {
+
+        return ApiResponse.<Boolean>builder()
+                .code(200)
+                .message("healthy check success")
+                .result(true)
+                .build();
     }
 
     @PostMapping("/introspect")

@@ -40,7 +40,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String[] publicEndpoints = {
             "/identity/auth/.*",
             "/identity/users/registration",
-            "/product/uploads/.*"
+            "/product/uploads/.*",
+            "/identity/auth/healthy-check"
     };
 
     @Value("${app.api-prefix}")

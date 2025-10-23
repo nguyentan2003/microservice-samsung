@@ -8,21 +8,22 @@ import jakarta.validation.ConstraintViolation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.samsung.identity.dto.request.ApiResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
 
+    // ✅ Bắt tất cả Exception (bao gồm RuntimeException)
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+    public ResponseEntity<ApiResponse> handlingRuntimeException(Exception exception) {
         log.error("Exception: ", exception);
         ApiResponse apiResponse = new ApiResponse();
 
@@ -32,8 +33,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
+    // ✅ Bắt AppException tuỳ chỉnh
     @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
+    public ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         ApiResponse apiResponse = new ApiResponse();
 
@@ -43,8 +45,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
+    // ✅ Bắt lỗi truy cập bị từ chối
     @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
+    public ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
         return ResponseEntity.status(errorCode.getStatusCode())
@@ -54,28 +57,26 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    // ✅ Bắt lỗi validate field khi dùng @Valid
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
+    public ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
         Map<String, Object> attributes = null;
+
         try {
             errorCode = ErrorCode.valueOf(enumKey);
-
             var constraintViolation =
                     exception.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
-
             attributes = constraintViolation.getConstraintDescriptor().getAttributes();
 
             log.info(attributes.toString());
-
         } catch (IllegalArgumentException e) {
-
+            log.warn("Invalid error code key: {}", enumKey);
         }
 
         ApiResponse apiResponse = new ApiResponse();
-
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(
                 Objects.nonNull(attributes)
@@ -87,7 +88,6 @@ public class GlobalExceptionHandler {
 
     private String mapAttribute(String message, Map<String, Object> attributes) {
         String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
-
         return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
     }
 }

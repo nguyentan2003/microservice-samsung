@@ -32,3 +32,10 @@ delete from orders;
 
 USE `topic9_product_service`;
 delete from order_detail;
+
+use admin
+db.createUser({
+user: "root",
+pwd: "root",
+roles: [ { role: "root", db: "admin" } ]
+})

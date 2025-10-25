@@ -17,7 +17,7 @@ spring:
             database: topic9_notification_service
             authentication-database: admin
     kafka:
-        bootstrap-servers: kafka-broker:9092
+        bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
         consumer:
             group-id: notification-group
             auto-offset-reset: earliest

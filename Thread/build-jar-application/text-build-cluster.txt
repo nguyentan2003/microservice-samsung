@@ -1,0 +1,92 @@
+
+####docker compose cho ca 3 may kafka
+version: "3.8"
+
+services:
+  kafka:
+    image: bitnami/kafka:3.8.0
+    container_name: kafka
+    env_file:
+      - .env
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+      - kafka-net
+
+volumes:
+  kafka_data:
+
+networks:
+  kafka-net:
+    driver: bridge
+
+/// volumes: 
+ 	kafka:
+
+
+#### .env broker1
+KAFKA_CFG_NODE_ID=1
+KAFKA_CFG_PROCESS_ROLES=broker,controller
+KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@10.0.0.11:9093,2@10.0.0.12:9093,3@10.0.0.13:9093
+KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://10.0.0.11:9092
+KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+KAFKA_KRAFT_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk
+
+
+#### .env broker2
+KAFKA_CFG_NODE_ID=2
+KAFKA_CFG_PROCESS_ROLES=broker,controller
+KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@10.0.0.11:9093,2@10.0.0.12:9093,3@10.0.0.13:9093
+KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://10.0.0.12:9092
+KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+KAFKA_KRAFT_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk
+
+
+#### .env broker3
+KAFKA_CFG_NODE_ID=3
+KAFKA_CFG_PROCESS_ROLES=broker,controller
+KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@10.0.0.11:9093,2@10.0.0.12:9093,3@10.0.0.13:9093
+KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://10.0.0.13:9092
+KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+KAFKA_KRAFT_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk
+
+💡 8️⃣ Giải thích các tham số chính
+Tham số	Ý nghĩa
+KAFKA_CFG_NODE_ID	ID duy nhất của mỗi node
+KAFKA_CFG_PROCESS_ROLES	Định nghĩa node này là broker, controller, hay cả hai
+KAFKA_CFG_CONTROLLER_QUORUM_VOTERS	Danh sách controller tham gia bầu chọn
+KAFKA_CFG_ADVERTISED_LISTENERS	Địa chỉ mà client (service khác) dùng để kết nối tới broker
+KAFKA_CFG_LISTENERS	Cổng nội bộ mà Kafka lắng nghe
+KAFKA_CFG_CONTROLLER_LISTENER_NAMES	Tên listener chuyên cho quorum controller
+KAFKA_CFG_LOG_DIRS	Nơi Kafka lưu dữ liệu topic/partition
+
+spring:
+  kafka:
+    bootstrap-servers: 10.0.0.11:9092,10.0.0.12:9092,10.0.0.13:9092
+    consumer:
+      group-id: order-service-group
+      auto-offset-reset: earliest
+    producer:
+      retries: 3
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+
+

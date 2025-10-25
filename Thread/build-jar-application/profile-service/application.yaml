@@ -18,7 +18,7 @@ spring:
 
     spring:
         kafka:
-            bootstrap-servers: kafka-broker:9092
+            bootstrap-servers: kafka-1:9092,kafka-2:9092,kafka-3:9092
             consumer:
                 group-id: profile-service
                 auto-offset-reset: earliest

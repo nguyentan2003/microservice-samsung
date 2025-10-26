@@ -58,7 +58,7 @@ public class OrderService {
                         .userId(order.getUserId())
                         .build());
 
-        scheduleOrderTimeout(order.getId());
+        //        scheduleOrderTimeout(order.getId());
         return orderResponse;
     }
 

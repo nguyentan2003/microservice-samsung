@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 public class PaymentRequest {
 
     String orderId;
+    String userId;
     String paymentMethod;
     Long amount;
     String status;

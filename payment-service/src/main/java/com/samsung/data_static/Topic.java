@@ -14,7 +14,8 @@ public class Topic {
     public static final String ORDER_SUCCESS = "OrderSuccess3";
     public static final String ORDER_CANCELED = "OrderCanceled3";
     public static final String RETURN_STOCK = "ReturnStock";
-
+    public static final String PAYMENT_CONFIRMED = "PaymentConfirmed";
+    public static final String NOTIFICATION_STATUS = "NotificationStatus";
     // Ngăn không cho tạo instance class này
     private Topic() {}
 }

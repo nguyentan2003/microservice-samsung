@@ -21,13 +21,14 @@ export function setup() {
 }
 // 🧩 Cấu hình test
 export const options = {
-    vus: 100, // 10 user ảo chạy song song
-    iterations: 1000, // Tổng cộng 100 request
-    // Hoặc có thể dùng duration:
+    vus: 500,
+    iterations: 10000,
+    duration: "90s",
+
     // duration: '30s', // chạy trong 30 giây
 };
 
-export default function (data) {
+export default function(data) {
     const token = data.token;
     if (!token) {
         return;
@@ -40,13 +41,11 @@ export default function (data) {
         totalAmount: 500000,
         paymentType: "PREPAID",
         address: "123 Main St, City, Country",
-        listItemDetail: [
-            {
-                productId: "8b0e6d3c-b25d-48c4-a203-a55a79a92698",
-                quantity: 1,
-                priceAtTime: 10000000,
-            },
-        ],
+        listItemDetail: [{
+            productId: "8b0e6d3c-b25d-48c4-a203-a55a79a92698",
+            quantity: 1,
+            priceAtTime: 10000000,
+        }, ],
     });
 
     const params = {
